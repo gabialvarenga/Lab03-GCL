@@ -20,6 +20,8 @@
 - HU008: Como aluno, desejo receber um cupom no email contendo um código para realizar as trocas presenciais. 
 - HU009: Como empresa, desejo receber um email com detalhes e o código de troca realizada pelo aluno, para facilitar a conferência.
 - HU0010: Como usuário (aluno, professor ou empresa), desejo realizar login no sistema, para acessar as funcionalidades disponíveis. 
+- HU0011: Como professor, desejo enviar moedas para meus alunos em forma de reconhecimento de desempenho. 
+- HU0012: Como aluno, desejo receber moedas dos professores, para receber reconhecimento de desempenho. 
 ---
 
 ## Requisitos
