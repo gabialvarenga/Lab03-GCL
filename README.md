@@ -30,11 +30,24 @@
 
 | RF   | Descrição                                                                                      | Complexidade |
 |:-----|:----------------------------------------------------------------------------------------------|:------------|
+| RF001 | O sistema deve permitir o cadastro de alunos, incluindo nome, email, CPF, RG, endereço, instituição de ensino e curso. | Média |
+| RF002 | O sistema deve permitir que professores enviem moedas para alunos, indicando o montante e o motivo do reconhecimento. | Alta |
+| RF003 | O sistema deve notificar os alunos por email sempre que receberem moedas, incluindo o motivo do reconhecimento. | Média |
+| RF004 | O sistema deve permitir que alunos e professores consultem o saldo de moedas e o histórico de transações. | Média |
+| RF005 | O sistema deve permitir que alunos troquem moedas por vantagens cadastradas no sistema, como descontos ou materiais específicos. | Alta |
+| RF006 | O sistema deve permitir o cadastro de empresas parceiras, incluindo as vantagens que desejam oferecer, com descrição, foto e custo em moedas. | Alta |
+| RF007 | O sistema deve enviar um email com um cupom ao aluno ao resgatar uma vantagem, contendo um código para realizar a troca presencial. | Média |
+| RF008 | O sistema deve enviar um email à empresa parceira com os detalhes e o código da troca realizada pelo aluno. | Média |
+| RF009 | O sistema deve permitir que alunos, professores e empresas realizem login e autenticação para acessar suas funcionalidades. | Alta |
+| RF010 | O sistema deve permitir que a instituição pré-cadastre professores e esteja vinculada aos alunos. | Média |
 
 ### Requisitos Não Funcionais (RNF)
 
 | RNF  | Descrição                                                                                      | Complexidade |
 |:-----|:----------------------------------------------------------------------------------------------|:------------|
+| RNF001 | O sistema deve ser acessível via navegador web.                                              | Baixa       |
+| RNF002 | O sistema deve enviar notificações por email em até 5 segundos após a transação.     *        | Média       |
+| RNF003 | O sistema deve armazenar dados de forma segura, utilizando criptografia para senhas.         | Alta        |
 
 ---
 
