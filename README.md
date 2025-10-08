@@ -46,7 +46,7 @@
 | RNF  | Descrição                                                                                      | Complexidade |
 |:-----|:----------------------------------------------------------------------------------------------|:------------|
 | RNF001 | O sistema deve ser acessível via navegador web.                                              | Baixa       |
-| RNF002 | O sistema deve enviar notificações por email em até 5 segundos após a transação.     *        | Média       |
+| RNF002 | O sistema deve enviar notificações por email em até 5 segundos após a transação.             | Média       |
 | RNF003 | O sistema deve armazenar dados de forma segura, utilizando criptografia para senhas.         | Alta        |
 
 ---
