@@ -39,6 +39,7 @@
 
 
 -HU0010: Como usuário (aluno, professor ou empresa), desejo realizar login no sistema, para acessar as funcionalidades disponíveis.
+
 ---
 
 ## Requisitos
