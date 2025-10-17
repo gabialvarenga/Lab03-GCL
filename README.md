@@ -11,7 +11,7 @@
 ## *História de Usuários*
 
 - HU001: Como aluno, quero me cadastrar no sistema para usar todos os recursos disponíveis.
-- HU002: Como professor,desejo receber um saldo inicial de 1000 moedas a cada semestre para distribuir aos alunos como reconhecimento.
+- HU002: Como professor, desejo receber um saldo inicial de 1000 moedas a cada semestre para distribuir aos alunos como reconhecimento.
 - HU003: Como aluno, desejo receber notificações no email sempre que receber uma moeda, incluindo o motivo do reconhecimento. 
 - HU004: Como aluno, desejo consultar meu saldo de moedas e histórico de transações.
 - HU005: Como professor, desejo consultar meu saldo de moedas e histórico de transações.
