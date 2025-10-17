@@ -1,0 +1,104 @@
+<diagram program="umletino" version="15.1">
+<zoom_level>9</zoom_level>
+<element><id>UMLClass</id><coordinates><x>152</x><y>308</y><w>216</w><h>162</h></coordinates><panel_attributes>Usuário
+--
+- id: Long
+- nome: String
+- email: String
+- senha: String
+- tipoUsuario: TipoUsuario
+--
++ login(): boolean
++ atualizarPerfil(): void
++ obterNotificacoes(): List&lt;Notificacao&gt;</panel_attributes><additional_attributes></additional_attributes></element>
+<element><id>UMLClass</id><coordinates><x>20</x><y>520</x><w>216</w><h>180</h></coordinates><panel_attributes>Aluno
+--
+- cpf: String
+- rg: String
+- endereco: String
+- instituicao: String
+- curso: String
+- saldoMoedas: int
+--
++ receberMoeda(quantidade: int, motivo: String): void
++ trocarVantagem(vantagem: Vantagem): boolean
++ obterHistoricoTransacoes(): List&lt;Transacao&gt;
++ obterSaldo(): int</panel_attributes><additional_attributes></additional_attributes></element>
+<element><id>UMLClass</id><coordinates><x>400</x><y>520</x><w>216</w><h>162</h></coordinates><panel_attributes>Professor
+--
+- departamento: String
+- instituicao: String
+- saldoSemestral: int
+--
++ enviarMoeda(aluno: Aluno, quantidade: int, motivo: String): boolean
++ obterSaldo(): int
++ obterHistoricoTransacoes(): List&lt;Transacao&gt;</panel_attributes><additional_attributes></additional_attributes></element>
+<element><id>UMLClass</id><coordinates><x>780</x><y>520</x><w>216</w><h>162</h></coordinates><panel_attributes>Empresa
+--
+- cnpj: String
+- endereco: String
+- responsavel: String
+--
++ cadastrarVantagem(vantagem: Vantagem): void
++ obterVantagens(): List&lt;Vantagem&gt;
++ processarResgate(codigo: String): boolean</panel_attributes><additional_attributes></additional_attributes></element>
+<element><id>UMLClass</id><coordinates><x>1160</x><y>520</x><w>216</w><h>162</h></coordinates><panel_attributes>Vantagem
+--
+- id: Long
+- nome: String
+- descricao: String
+- foto: String
+- custoEmMoedas: int
+- empresa: Empresa
+--
++ obterDetalhes(): String
++ estaDisponivel(): boolean</panel_attributes><additional_attributes></additional_attributes></element>
+<element><id>UMLClass</id><coordinates><x>400</x><y>800</x><w>240</w><h>180</h></coordinates><panel_attributes>Transacao
+--
+- id: Long
+- quantidade: int
+- data: LocalDateTime
+- tipo: TipoTransacao
+- motivo: String
+- remetente: Usuário
+- destinatario: Usuário
+--
++ obterDetalhes(): String
++ enviarNotificacao(): void</panel_attributes><additional_attributes></additional_attributes></element>
+<element><id>UMLClass</id><coordinates><x>780</x><y>800</x><w>216</w><h>162</h></coordinates><panel_attributes>Cupom
+--
+- id: Long
+- codigo: String
+- vantagem: Vantagem
+- aluno: Aluno
+- dataGeracao: LocalDateTime
+- utilizado: boolean
+--
++ enviarParaAluno(): void
++ enviarParaEmpresa(): void
++ marcarComoUtilizado(): void</panel_attributes><additional_attributes></additional_attributes></element>
+<element><id>UMLClass</id><coordinates><x>1160</x><y>800</x><w>216</w><h>140</h></coordinates><panel_attributes>Notificacao
+--
+- id: Long
+- destinatario: Usuário
+- mensagem: String
+- dataEnvio: LocalDateTime
+- lida: boolean
+--
++ enviar(): void
++ marcarComoLida(): void</panel_attributes><additional_attributes></additional_attributes></element>
+<element><id>UMLClass</id><coordinates><x>20</x><y>800</x><w>180</w><h>100</h></coordinates><panel_attributes>&lt;&lt;enumeração&gt;&gt;
+TipoTransacao
+--
+RECEBIDA
+ENVIADA
+TROCADA</panel_attributes><additional_attributes></additional_attributes></element>
+<element><id>UMLClass</id><coordinates><x>152</x><y>30</x><w>180</w><h>100</h></coordinates><panel_attributes>&lt;&lt;enumeração&gt;&gt;
+TipoUsuario
+--
+ALUNO
+PROFESSOR
+EMPRESA</panel_attributes><additional_attributes></additional_attributes></element>
+<!-- Relações -->
+<element><id>Relation</id><coordinates><x>152</x><y>308</x><w>216</w><h>162</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>216;0;216;162;0;162;0;0</additional_attributes></element>
+</diagram>

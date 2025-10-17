@@ -1,0 +1,120 @@
+<diagram program="umletino" version="15.1"><zoom_level>7</zoom_level><element><id>UMLClass</id><coordinates><x>91</x><y>42</y><w>168</w><h>119</h></coordinates><panel_attributes>User
+--
+- id: Long
+- name: String
+- email: String
+- password: String
+- role: Role
+--
++ login(): boolean
++ updateProfile(): void
++ getNotifications(): List&lt;Notification&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>63</x><y>196</y><w>217</w><h>154</h></coordinates><panel_attributes>Student
+--
+- cpf: String
+- rg: String
+- address: String
+- institution: Institution
+- course: String
+- coinBalance: int
+--
++ register(): boolean
++ receiveCoin(amount: int, reason: String): void
++ redeemAdvantage(advantage: Advantage): Coupon
++ getTransactionHistory(): List&lt;Transaction&gt;
++ getBalance(): int</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>343</x><y>35</y><w>273</w><h>119</h></coordinates><panel_attributes>Teacher
+--
+- cpf: String
+- department: String
+- institution: Institution
+- semesterBalance: int
+--
++ sendCoin(student: Student, amount: int, reason: String): boolean
++ getBalance(): int
++ getTransactionHistory(): List&lt;Transaction&gt;
++ receiveSemesterCoins(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>644</x><y>35</y><w>224</w><h>105</h></coordinates><panel_attributes>Company
+--
+- cnpj: String
+- address: String
+- contactPerson: String
+--
++ registerAdvantage(advantage: Advantage): void
++ getAdvantages(): List&lt;Advantage&gt;
++ processRedemption(code: String): boolean
++ receiveRedemptionNotification(coupon: Coupon): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>651</x><y>392</y><w>182</w><h>126</h></coordinates><panel_attributes>Advantage
+--
+- id: Long
+- name: String
+- description: String
+- photo: String
+- costInCoins: int
+- company: Company
+--
++ getDetails(): String
++ isAvailable(): boolean
++ validateCost(studentBalance: int): boolean</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>315</x><y>196</y><w>196</w><h>154</h></coordinates><panel_attributes>Transaction
+--
+- id: Long
+- amount: int
+- date: LocalDateTime
+- type: TransactionType
+- reason: String
+- sender: User
+- receiver: User
+--
++ getDetails(): String
++ sendNotification(): void
++ registerTransaction(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>329</x><y>399</y><w>168</w><h>133</h></coordinates><panel_attributes>Coupon
+--
+- id: Long
+- code: String
+- advantage: Advantage
+- student: Student
+- generatedDate: LocalDateTime
+- used: boolean
+--
++ sendToStudent(): void
++ sendToCompany(): void
++ markAsUsed(): void
++ generateCode(): String</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>511</x><y>560</y><w>168</w><h>105</h></coordinates><panel_attributes>Notification
+--
+- id: Long
+- recipient: User
+- message: String
+- sentDate: LocalDateTime
+- read: boolean
+--
++ send(): void
++ markAsRead(): void
++ sendEmail(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>546</x><y>231</y><w>77</w><h>63</h></coordinates><panel_attributes>&lt;&lt;enumeration&gt;&gt;
+TransactionType
+--
+RECEIVED
+SENT
+REDEEMED</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>14</y><w>70</w><h>63</h></coordinates><panel_attributes>&lt;&lt;enumeration&gt;&gt;
+Role
+--
+STUDENT
+TEACHER
+COMPANY</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>252</x><y>98</y><w>105</w><h>21</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;130;10</additional_attributes></element><element><id>Relation</id><coordinates><x>161</x><y>154</y><w>21</w><h>56</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;60</additional_attributes></element><element><id>Relation</id><coordinates><x>168</x><y>0</y><w>588</w><h>56</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;60;10;10;820;10;820;50</additional_attributes></element><element><id>Relation</id><coordinates><x>63</x><y>42</y><w>42</w><h>35</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=1</panel_attributes><additional_attributes>40;30;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>231</x><y>343</y><w>231</w><h>49</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=0..*
+receives &gt;</panel_attributes><additional_attributes>10;10;10;50;290;50;290;10</additional_attributes></element><element><id>Relation</id><coordinates><x>413</x><y>140</y><w>56</w><h>70</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=0..*
+sends &gt;</panel_attributes><additional_attributes>10;10;10;80</additional_attributes></element><element><id>Relation</id><coordinates><x>735</x><y>133</y><w>56</w><h>273</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=0..*
+offers &gt;</panel_attributes><additional_attributes>10;10;10;370</additional_attributes></element><element><id>Relation</id><coordinates><x>266</x><y>343</y><w>259</w><h>294</h></coordinates><panel_attributes>lt=-
+m1=0..*
+m2=0..*
+redeems &gt;</panel_attributes><additional_attributes>10;10;10;390;350;390</additional_attributes></element><element><id>Relation</id><coordinates><x>490</x><y>441</y><w>175</w><h>35</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=0..*
+generates &gt;</panel_attributes><additional_attributes>230;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>119</x><y>343</y><w>224</w><h>105</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=0..*
+receives &gt;</panel_attributes><additional_attributes>10;10;10;120;300;120</additional_attributes></element><element><id>Relation</id><coordinates><x>413</x><y>343</y><w>168</w><h>231</h></coordinates><panel_attributes>lt=.&gt;
+&lt;&lt;triggers&gt;&gt;</panel_attributes><additional_attributes>10;10;10;310;220;310</additional_attributes></element><element><id>Relation</id><coordinates><x>413</x><y>525</y><w>126</w><h>56</h></coordinates><panel_attributes>lt=.&gt;
+&lt;&lt;triggers&gt;&gt;</panel_attributes><additional_attributes>10;10;10;60;160;60</additional_attributes></element></diagram>
