@@ -1,104 +1,103 @@
-<diagram program="umletino" version="15.1">
-<zoom_level>9</zoom_level>
-<element><id>UMLClass</id><coordinates><x>152</x><y>308</y><w>216</w><h>162</h></coordinates><panel_attributes>Usuário
+<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>250</x><y>80</y><w>240</w><h>170</h></coordinates><panel_attributes>&lt;&lt;abstract&gt;&gt;
+User
 --
 - id: Long
-- nome: String
+- name: String
 - email: String
-- senha: String
-- tipoUsuario: TipoUsuario
+- password: String
+- role: Role
 --
-+ login(): boolean
-+ atualizarPerfil(): void
-+ obterNotificacoes(): List&lt;Notificacao&gt;</panel_attributes><additional_attributes></additional_attributes></element>
-<element><id>UMLClass</id><coordinates><x>20</x><y>520</x><w>216</w><h>180</h></coordinates><panel_attributes>Aluno
++ login(): boolean</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>210</x><y>340</y><w>310</w><h>220</h></coordinates><panel_attributes>Student
 --
 - cpf: String
 - rg: String
-- endereco: String
-- instituicao: String
-- curso: String
-- saldoMoedas: int
+- address: String
+- institution: Institution 
+- course: String
+- coinBalance: int
 --
-+ receberMoeda(quantidade: int, motivo: String): void
-+ trocarVantagem(vantagem: Vantagem): boolean
-+ obterHistoricoTransacoes(): List&lt;Transacao&gt;
-+ obterSaldo(): int</panel_attributes><additional_attributes></additional_attributes></element>
-<element><id>UMLClass</id><coordinates><x>400</x><y>520</x><w>216</w><h>162</h></coordinates><panel_attributes>Professor
++ receiveCoin(amount: int, reason: String): void
++ redeemAdvantage(advantage: Advantage): Coupon
++ getTransactionHistory(): List&lt;Transaction&gt;
++ getBalance(): int</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>610</x><y>80</y><w>390</w><h>170</h></coordinates><panel_attributes>Teacher
 --
-- departamento: String
-- instituicao: String
-- saldoSemestral: int
+- cpf: String
+- department: String
+- institution: Institution
+- currentBalance: int 
 --
-+ enviarMoeda(aluno: Aluno, quantidade: int, motivo: String): boolean
-+ obterSaldo(): int
-+ obterHistoricoTransacoes(): List&lt;Transacao&gt;</panel_attributes><additional_attributes></additional_attributes></element>
-<element><id>UMLClass</id><coordinates><x>780</x><y>520</x><w>216</w><h>162</h></coordinates><panel_attributes>Empresa
++ sendCoin(student: Student, amount: int, reason: String): boolean
++ getBalance(): int
++ getTransactionHistory(): List&lt;Transaction&gt;
++ receiveSemesterCoins(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1040</x><y>80</y><w>320</w><h>170</h></coordinates><panel_attributes>Company
 --
 - cnpj: String
-- endereco: String
-- responsavel: String
+- address: String
+- contactPerson: String
 --
-+ cadastrarVantagem(vantagem: Vantagem): void
-+ obterVantagens(): List&lt;Vantagem&gt;
-+ processarResgate(codigo: String): boolean</panel_attributes><additional_attributes></additional_attributes></element>
-<element><id>UMLClass</id><coordinates><x>1160</x><y>520</x><w>216</w><h>162</h></coordinates><panel_attributes>Vantagem
---
-- id: Long
-- nome: String
-- descricao: String
-- foto: String
-- custoEmMoedas: int
-- empresa: Empresa
---
-+ obterDetalhes(): String
-+ estaDisponivel(): boolean</panel_attributes><additional_attributes></additional_attributes></element>
-<element><id>UMLClass</id><coordinates><x>400</x><y>800</x><w>240</w><h>180</h></coordinates><panel_attributes>Transacao
++ registerAdvantage(advantage: Advantage): void
++ getAdvantages(): List&lt;Advantage&gt;
++ processRedemption(code: String): boolean</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1050</x><y>620</y><w>260</w><h>180</h></coordinates><panel_attributes>Advantage
 --
 - id: Long
-- quantidade: int
-- data: LocalDateTime
-- tipo: TipoTransacao
-- motivo: String
-- remetente: Usuário
-- destinatario: Usuário
+- name: String
+- description: String
+- costInCoins: int
+- company: Company
 --
-+ obterDetalhes(): String
-+ enviarNotificacao(): void</panel_attributes><additional_attributes></additional_attributes></element>
-<element><id>UMLClass</id><coordinates><x>780</x><y>800</x><w>216</w><h>162</h></coordinates><panel_attributes>Cupom
++ getDetails(): String
++ isAvailable(): boolean
++ validateCost(studentBalance: int): boolean</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>570</x><y>340</y><w>280</w><h>220</h></coordinates><panel_attributes>Transaction
 --
 - id: Long
-- codigo: String
-- vantagem: Vantagem
-- aluno: Aluno
-- dataGeracao: LocalDateTime
-- utilizado: boolean
+- amount: int
+- date: LocalDateTime
+- type: TransactionType
+- reason: String
+- sender: User
+- receiver: User
 --
-+ enviarParaAluno(): void
-+ enviarParaEmpresa(): void
-+ marcarComoUtilizado(): void</panel_attributes><additional_attributes></additional_attributes></element>
-<element><id>UMLClass</id><coordinates><x>1160</x><y>800</x><w>216</w><h>140</h></coordinates><panel_attributes>Notificacao
++ getDetails(): String</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>590</x><y>630</y><w>240</w><h>190</h></coordinates><panel_attributes>Coupon
 --
 - id: Long
-- destinatario: Usuário
-- mensagem: String
-- dataEnvio: LocalDateTime
-- lida: boolean
+- code: String
+- advantage: Advantage
+- student: Student
+- generatedDate: LocalDateTime
+- used: boolean
 --
-+ enviar(): void
-+ marcarComoLida(): void</panel_attributes><additional_attributes></additional_attributes></element>
-<element><id>UMLClass</id><coordinates><x>20</x><y>800</x><w>180</w><h>100</h></coordinates><panel_attributes>&lt;&lt;enumeração&gt;&gt;
-TipoTransacao
++ markAsUsed(): void
++ generateCode(): String</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>900</x><y>390</y><w>110</w><h>90</h></coordinates><panel_attributes>&lt;&lt;enumeration&gt;&gt;
+TransactionType
 --
-RECEBIDA
-ENVIADA
-TROCADA</panel_attributes><additional_attributes></additional_attributes></element>
-<element><id>UMLClass</id><coordinates><x>152</x><y>30</x><w>180</w><h>100</h></coordinates><panel_attributes>&lt;&lt;enumeração&gt;&gt;
-TipoUsuario
+RECEIVED
+SENT
+REDEEMED</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>70</x><y>150</y><w>100</w><h>90</h></coordinates><panel_attributes>&lt;&lt;enumeration&gt;&gt;
+Role
 --
-ALUNO
-PROFESSOR
-EMPRESA</panel_attributes><additional_attributes></additional_attributes></element>
-<!-- Relações -->
-<element><id>Relation</id><coordinates><x>152</x><y>308</x><w>216</w><h>162</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>216;0;216;162;0;162;0;0</additional_attributes></element>
-</diagram>
+STUDENT
+TEACHER
+COMPANY</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>480</x><y>170</y><w>150</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;130;10</additional_attributes></element><element><id>Relation</id><coordinates><x>350</x><y>240</y><w>30</w><h>120</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;100</additional_attributes></element><element><id>Relation</id><coordinates><x>360</x><y>30</y><w>840</w><h>70</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;50;10;10;820;10;820;50</additional_attributes></element><element><id>Relation</id><coordinates><x>450</x><y>550</y><w>330</w><h>70</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=0..*
+receives &gt;</panel_attributes><additional_attributes>10;10;10;50;290;50;290;10</additional_attributes></element><element><id>Relation</id><coordinates><x>710</x><y>240</y><w>80</w><h>120</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=0..*
+sends &gt;</panel_attributes><additional_attributes>10;10;10;100</additional_attributes></element><element><id>Relation</id><coordinates><x>1170</x><y>240</y><w>80</w><h>400</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=0..*
+offers &gt;</panel_attributes><additional_attributes>10;10;10;380</additional_attributes></element><element><id>Relation</id><coordinates><x>820</x><y>690</y><w>250</w><h>50</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=0..*
+generates &gt;</panel_attributes><additional_attributes>230;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>290</x><y>550</y><w>320</w><h>150</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=0..*
+receives &gt;</panel_attributes><additional_attributes>10;10;10;120;300;120</additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>0</y><w>160</w><h>90</h></coordinates><panel_attributes>Institution
+--
+- id: Long
+- name: String
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>10</x><y>80</y><w>220</w><h>410</h></coordinates><panel_attributes>lt=-
+m1=*
+m2=1</panel_attributes><additional_attributes>200;380;10;380;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>150</x><y>0</y><w>500</w><h>100</h></coordinates><panel_attributes>lt=-
+m1=*
+m2=1</panel_attributes><additional_attributes>470;80;470;10;10;10</additional_attributes></element></diagram>
