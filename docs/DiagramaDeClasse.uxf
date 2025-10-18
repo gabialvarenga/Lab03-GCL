@@ -1,4 +1,4 @@
-<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>250</x><y>80</y><w>240</w><h>170</h></coordinates><panel_attributes>&lt;&lt;abstract&gt;&gt;
+<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>250</x><y>80</y><w>240</w><h>170</h></coordinates><panel_attributes>&lt;&lt;abstract&gt;&gt;
 User
 --
 - id: Long
@@ -44,9 +44,9 @@ User
 - description: String
 - costInCoins: int
 - company: Company
+- photo: String
 --
 + getDetails(): String
-+ isAvailable(): boolean
 + validateCost(studentBalance: int): boolean</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>570</x><y>340</y><w>280</w><h>220</h></coordinates><panel_attributes>Transaction
 --
 - id: Long
