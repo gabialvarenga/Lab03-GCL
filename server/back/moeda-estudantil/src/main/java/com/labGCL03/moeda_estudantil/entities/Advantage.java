@@ -1,0 +1,79 @@
+package com.labGCL03.moeda_estudantil.entities;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Entity
+@Table(name = "advantages", indexes = {
+    @Index(name = "idx_advantage_company", columnList = "company_id")
+})
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class Advantage {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
+    private Long id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(length = 1000)
+    private String description;
+
+    @Column(name = "cost_in_coins", nullable = false)
+    private Integer costInCoins;
+
+    private String photo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
+
+    @OneToMany(mappedBy = "advantage", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Coupon> coupons;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PrePersist
+    @PreUpdate
+    private void validateCost() {
+        if (costInCoins <= 0) {
+            throw new IllegalArgumentException("Custo deve ser positivo");
+        }
+    }
+
+    public String getDetails() {
+        return String.format("%s - %d moedas", name, costInCoins);
+    }
+
+    public void validateCost(Integer studentBalance) {
+        if (studentBalance < costInCoins) {
+            throw new IllegalArgumentException("Saldo insuficiente");
+        }
+    }
+}
