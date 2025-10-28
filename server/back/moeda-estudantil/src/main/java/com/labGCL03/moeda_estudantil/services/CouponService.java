@@ -36,16 +36,11 @@ public class CouponService {
             throw new IllegalArgumentException("Saldo insuficiente");
         }
 
-        // Debitar moedas do aluno
-        student.setCoinBalance(student.getCoinBalance() - advantage.getCostInCoins());
-        studentRepository.save(student);
-
-        // Criar cupom
-        Coupon coupon = new Coupon();
-        coupon.setStudent(student);
-        coupon.setAdvantage(advantage);
-        coupon.setUsed(false);
+        // Usar o método da entidade Student para resgatar vantagem
+        Coupon coupon = student.redeemAdvantage(advantage);
         
+        // Persistir as alterações
+        studentRepository.save(student);
         Coupon savedCoupon = couponRepository.save(coupon);
 
         // Criar transação de resgate

@@ -42,6 +42,10 @@ public class Advantage {
     @OneToMany(mappedBy = "advantage", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Coupon> coupons;
 
+    // Relacionamento Many-to-Many inverso com Student
+    @ManyToMany(mappedBy = "redeemedAdvantages", fetch = FetchType.LAZY)
+    private List<Student> studentsWhoRedeemed;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -75,5 +79,17 @@ public class Advantage {
         if (studentBalance < costInCoins) {
             throw new IllegalArgumentException("Saldo insuficiente");
         }
+    }
+
+    public List<Student> getStudentsWhoRedeemed() {
+        return studentsWhoRedeemed != null ? studentsWhoRedeemed : List.of();
+    }
+
+    public int getTimesRedeemed() {
+        return studentsWhoRedeemed != null ? studentsWhoRedeemed.size() : 0;
+    }
+
+    public List<Coupon> getCoupons() {
+        return coupons != null ? coupons : List.of();
     }
 }

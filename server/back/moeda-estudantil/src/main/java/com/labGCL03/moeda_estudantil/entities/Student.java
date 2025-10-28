@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -37,6 +38,15 @@ public class Student extends User {
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Coupon> coupons;
 
+    // Relacionamento Many-to-Many com Advantage via tabela de resgates
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "student_advantages_redeemed",
+        joinColumns = @JoinColumn(name = "student_id"),
+        inverseJoinColumns = @JoinColumn(name = "advantage_id")
+    )
+    private List<Advantage> redeemedAdvantages;
+
     @Override
     public void login() {
         // Implementação específica para login do estudante
@@ -56,8 +66,18 @@ public class Student extends User {
     public Coupon redeemAdvantage(Advantage advantage) {
         if (this.coinBalance >= advantage.getCostInCoins()) {
             this.coinBalance -= advantage.getCostInCoins();
+            
+            // Adicionar vantagem à lista de resgatadas
+            if (redeemedAdvantages == null) {
+                redeemedAdvantages = new ArrayList<>();
+            }
+            redeemedAdvantages.add(advantage);
+            
             // Criar e retornar cupom
-            return new Coupon();
+            Coupon coupon = new Coupon();
+            coupon.setStudent(this);
+            coupon.setAdvantage(advantage);
+            return coupon;
         }
         throw new IllegalArgumentException("Saldo insuficiente");
     }
@@ -68,6 +88,14 @@ public class Student extends User {
 
     public Integer getBalance() {
         return this.coinBalance;
+    }
+
+    public List<Advantage> getRedeemedAdvantages() {
+        return redeemedAdvantages != null ? redeemedAdvantages : new ArrayList<>();
+    }
+
+    public boolean hasRedeemedAdvantage(Advantage advantage) {
+        return redeemedAdvantages != null && redeemedAdvantages.contains(advantage);
     }
 
     @PrePersist
