@@ -56,17 +56,17 @@ public class Advantage {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+        validateCost();
     }
 
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+        validateCost();
     }
 
-    @PrePersist
-    @PreUpdate
     private void validateCost() {
-        if (costInCoins <= 0) {
+        if (costInCoins != null && costInCoins <= 0) {
             throw new IllegalArgumentException("Custo deve ser positivo");
         }
     }

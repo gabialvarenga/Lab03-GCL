@@ -1,7 +1,14 @@
 package com.labGCL03.moeda_estudantil.services;
 
+import com.labGCL03.moeda_estudantil.dto.StudentRequestDTO;
+import com.labGCL03.moeda_estudantil.dto.StudentUpdateDTO;
+import com.labGCL03.moeda_estudantil.entities.Institution;
 import com.labGCL03.moeda_estudantil.entities.Student;
 import com.labGCL03.moeda_estudantil.entities.Transaction;
+import com.labGCL03.moeda_estudantil.enums.Role;
+import com.labGCL03.moeda_estudantil.exception.BusinessException;
+import com.labGCL03.moeda_estudantil.exception.ResourceNotFoundException;
+import com.labGCL03.moeda_estudantil.repositories.InstitutionRepository;
 import com.labGCL03.moeda_estudantil.repositories.StudentRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,20 +23,25 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
     private final TransactionService transactionService;
+    private final InstitutionRepository institutionRepository;
+
+    public List<Student> findAll() {
+        return studentRepository.findAll();
+    }
 
     public Student findById(Long id) {
         return studentRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
+            .orElseThrow(() -> new ResourceNotFoundException("Aluno", id));
     }
 
     public Student findByEmail(String email) {
         return studentRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
+            .orElseThrow(() -> new ResourceNotFoundException("Aluno com email " + email + " não encontrado"));
     }
 
     public Student findByCpf(String cpf) {
         return studentRepository.findByCpf(cpf)
-            .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
+            .orElseThrow(() -> new ResourceNotFoundException("Aluno com CPF " + cpf + " não encontrado"));
     }
 
     public List<Student> findByCourse(String course) {
@@ -40,13 +52,87 @@ public class StudentService {
         return studentRepository.findByInstitutionId(institutionId);
     }
 
-    public Student save(Student student) {
+    public Student create(StudentRequestDTO dto) {
         // Validar CPF único
-        if (student.getCpf() != null && studentRepository.existsByCpf(student.getCpf())) {
-            throw new IllegalArgumentException("CPF já cadastrado");
+        if (studentRepository.existsByCpf(dto.getCpf())) {
+            throw new BusinessException("CPF já cadastrado");
+        }
+        
+        // Validar email único
+        if (studentRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new BusinessException("Email já cadastrado");
+        }
+        
+        // Buscar instituição
+        Institution institution = institutionRepository.findById(dto.getInstitutionId())
+            .orElseThrow(() -> new ResourceNotFoundException("Instituição", dto.getInstitutionId()));
+        
+        // Criar estudante
+        Student student = new Student();
+        student.setName(dto.getName());
+        student.setEmail(dto.getEmail());
+        student.setPassword(dto.getPassword()); // TODO: Implementar criptografia de senha
+        student.setCpf(dto.getCpf());
+        student.setRg(dto.getRg());
+        student.setAddress(dto.getAddress());
+        student.setCourse(dto.getCourse());
+        student.setInstitution(institution);
+        student.setRole(Role.STUDENT);
+        student.setCoinBalance(0);
+        
+        return studentRepository.save(student);
+    }
+
+    public Student update(Long id, StudentUpdateDTO dto) {
+        Student student = findById(id);
+        
+        // Atualizar campos se fornecidos
+        if (dto.getName() != null && !dto.getName().isBlank()) {
+            student.setName(dto.getName());
+        }
+        
+        if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
+            // Verificar se email já existe para outro estudante
+            studentRepository.findByEmail(dto.getEmail()).ifPresent(existingStudent -> {
+                if (!existingStudent.getId().equals(id)) {
+                    throw new BusinessException("Email já cadastrado para outro estudante");
+                }
+            });
+            student.setEmail(dto.getEmail());
+        }
+        
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            student.setPassword(dto.getPassword()); // TODO: Implementar criptografia de senha
+        }
+        
+        if (dto.getRg() != null) {
+            student.setRg(dto.getRg());
+        }
+        
+        if (dto.getAddress() != null) {
+            student.setAddress(dto.getAddress());
+        }
+        
+        if (dto.getCourse() != null && !dto.getCourse().isBlank()) {
+            student.setCourse(dto.getCourse());
+        }
+        
+        if (dto.getInstitutionId() != null) {
+            Institution institution = institutionRepository.findById(dto.getInstitutionId())
+                .orElseThrow(() -> new ResourceNotFoundException("Instituição", dto.getInstitutionId()));
+            student.setInstitution(institution);
         }
         
         return studentRepository.save(student);
+    }
+
+    public void delete(Long id) {
+        Student student = findById(id);
+        
+        // Verificar se o aluno tem transações pendentes ou cupons ativos
+        // (Implementar validações de negócio conforme necessário)
+        
+        studentRepository.delete(student);
     }
 
     public Integer getStudentBalance(Long studentId) {
