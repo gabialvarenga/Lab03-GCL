@@ -9,26 +9,38 @@
 
 
 ## *História de Usuários*
-##**Histórias de alunos:**
+### **Histórias de alunos:**
 
-**HU001**: Como aluno, quero me cadastrar no sistema para usar todos os recursos disponíveis.
-**HU002**: Como aluno, desejo receber moedas dos professores, para ser reconhecido pelo meu desempenho.
-**HU003**: Como aluno, desejo receber notificações no email sempre que receber uma moeda, incluindo o motivo do reconhecimento.
-**HU004**: Como aluno, desejo consultar meu saldo de moedas e histórico de transações.
-**HU005**: Como aluno, desejo trocar moedas recebidas por vantagens cadastradas no sistema, como descontos ou materiais específicos.
-**HU006**: Como aluno, desejo receber um cupom no email contendo um código para realizar as trocas presenciais.
+* **HU001**: Como aluno, quero me cadastrar no sistema para usar todos os recursos disponíveis.
 
-**Histórias do Professor:**
-**HU007**: Como professor, desejo enviar moedas para meus alunos em forma de reconhecimento de desempenho.
-**HU008**: Como professor, desejo consultar meu saldo de moedas e histórico de transações.
+* **HU002**: Como aluno, desejo receber moedas dos professores, para ser reconhecido pelo meu desempenho.
 
-**Histórias da Empresa Parceira:**
-**HU009**: Como empresa, desejo realizar cadastro no sistema para oferecer vantagens aos alunos em troca de moedas.
-**HU010**: Como empresa, desejo cadastrar vantagens no sistema, informando descrição, foto e custo em moedas.
-**HU011**: Como empresa, desejo receber um email com detalhes e o código de troca realizada pelo aluno, para facilitar a conferência.
+* **HU003**: Como aluno, desejo receber notificações no email sempre que receber uma moeda, incluindo o motivo do reconhecimento.
 
-**História de Acesso ao sistema:**
-**HU012**: Como usuário (aluno, professor ou empresa), desejo realizar login no sistema para acessar as funcionalidades disponíveis.
+* **HU004**: Como aluno, desejo consultar meu saldo de moedas e histórico de transações.
+
+* **HU005**: Como aluno, desejo trocar moedas recebidas por vantagens cadastradas no sistema, como descontos ou materiais específicos.
+
+* **HU006**: Como aluno, desejo receber um cupom no email contendo um código para realizar as trocas presenciais.
+
+### **Histórias do Professor:**
+* **HU007**: Como professor, desejo enviar moedas para meus alunos em forma de reconhecimento de desempenho.
+
+* **HU008**: Como professor, desejo consultar meu saldo de moedas e histórico de transações.
+
+
+### **Histórias da Empresa Parceira:**
+* **HU009**: Como empresa, desejo realizar cadastro no sistema para oferecer vantagens aos alunos em troca de moedas.
+
+* **HU010**: Como empresa, desejo cadastrar vantagens no sistema, informando descrição, foto e custo em moedas.
+
+* **HU011**: Como empresa, desejo receber um email com detalhes e o código de troca realizada pelo aluno, para facilitar a conferência.
+
+
+### **História de Acesso ao sistema:**
+
+* **HU012**: Como usuário (aluno, professor ou empresa), desejo realizar login no sistema para acessar as funcionalidades disponíveis.
+
 ---
 
 ## Requisitos
