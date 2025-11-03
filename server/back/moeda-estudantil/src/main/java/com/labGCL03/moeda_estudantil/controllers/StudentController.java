@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,13 +54,16 @@ public class StudentController {
 
     @Operation(
             summary = "Buscar aluno por ID",
-            description = "Retorna os dados de um aluno específico através do seu ID"
+            description = "Retorna os dados de um aluno específico através do seu ID. Requer autenticação (STUDENT, TEACHER ou ADMIN)."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Aluno encontrado com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Sem permissão para acessar este recurso"),
             @ApiResponse(responseCode = "404", description = "Aluno não encontrado",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/{id}")
     public ResponseEntity<StudentResponseDTO> getStudentById(
             @Parameter(description = "ID do aluno", required = true) @PathVariable Long id) {
@@ -70,7 +75,7 @@ public class StudentController {
 
     @Operation(
             summary = "Criar novo aluno",
-            description = "Cria um novo aluno no sistema. O CPF e email devem ser únicos."
+            description = "Cria um novo aluno no sistema. O CPF e email devem ser únicos. Este endpoint é público (não requer autenticação)."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Aluno criado com sucesso"),
@@ -79,6 +84,7 @@ public class StudentController {
             @ApiResponse(responseCode = "404", description = "Instituição não encontrada",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @SecurityRequirements // Endpoint público
     @PostMapping
     public ResponseEntity<StudentResponseDTO> createStudent(
             @Parameter(description = "Dados do aluno a ser criado", required = true)
@@ -91,15 +97,18 @@ public class StudentController {
 
     @Operation(
             summary = "Atualizar aluno completamente",
-            description = "Atualiza todos os dados de um aluno existente (PUT)"
+            description = "Atualiza todos os dados de um aluno existente (PUT). Requer role STUDENT (próprio perfil) ou ADMIN."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Aluno atualizado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Sem permissão para atualizar este aluno"),
             @ApiResponse(responseCode = "404", description = "Aluno não encontrado",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/{id}")
     public ResponseEntity<StudentResponseDTO> updateStudent(
             @Parameter(description = "ID do aluno", required = true) @PathVariable Long id,
@@ -114,13 +123,16 @@ public class StudentController {
 
     @Operation(
             summary = "Atualizar aluno parcialmente",
-            description = "Atualiza apenas os campos fornecidos de um aluno existente (PATCH)"
+            description = "Atualiza apenas os campos fornecidos de um aluno existente (PATCH). Requer role STUDENT (próprio perfil) ou ADMIN."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Aluno atualizado com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Sem permissão para atualizar este aluno"),
             @ApiResponse(responseCode = "404", description = "Aluno não encontrado",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @PatchMapping("/{id}")
     public ResponseEntity<StudentResponseDTO> partialUpdateStudent(
             @Parameter(description = "ID do aluno", required = true) @PathVariable Long id,
@@ -135,13 +147,16 @@ public class StudentController {
 
     @Operation(
             summary = "Deletar aluno",
-            description = "Remove um aluno do sistema"
+            description = "Remove um aluno do sistema. Requer role ADMIN."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Aluno deletado com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Sem permissão para deletar alunos (requer ADMIN)"),
             @ApiResponse(responseCode = "404", description = "Aluno não encontrado",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStudent(
             @Parameter(description = "ID do aluno", required = true) 

@@ -21,6 +21,7 @@ import java.util.List;
 public class CompanyService {
 
     private final CompanyRepository companyRepository;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     public List<Company> findAll() {
         return companyRepository.findAll();
@@ -58,7 +59,7 @@ public class CompanyService {
         Company company = new Company();
         company.setName(dto.getName());
         company.setEmail(dto.getEmail());
-        company.setPassword(dto.getPassword()); // TODO: Implementar criptografia de senha
+        company.setPassword(passwordEncoder.encode(dto.getPassword()));
         company.setCnpj(dto.getCnpj());
         company.setAddress(dto.getAddress());
         company.setRole(Role.COMPANY);
@@ -90,7 +91,7 @@ public class CompanyService {
         }
         
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-            company.setPassword(dto.getPassword()); // TODO: Implementar criptografia de senha
+            company.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
         
         if (dto.getCnpj() != null && !dto.getCnpj().isBlank()) {

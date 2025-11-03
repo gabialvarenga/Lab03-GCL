@@ -24,6 +24,7 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final TransactionService transactionService;
     private final InstitutionRepository institutionRepository;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     public List<Student> findAll() {
         return studentRepository.findAll();
@@ -71,7 +72,7 @@ public class StudentService {
         Student student = new Student();
         student.setName(dto.getName());
         student.setEmail(dto.getEmail());
-        student.setPassword(dto.getPassword()); // TODO: Implementar criptografia de senha
+        student.setPassword(passwordEncoder.encode(dto.getPassword()));
         student.setCpf(dto.getCpf());
         student.setRg(dto.getRg());
         student.setAddress(dto.getAddress());
@@ -102,7 +103,7 @@ public class StudentService {
         }
         
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-            student.setPassword(dto.getPassword()); // TODO: Implementar criptografia de senha
+            student.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
         
         if (dto.getRg() != null) {

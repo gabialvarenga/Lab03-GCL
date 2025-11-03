@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,13 +54,15 @@ public class CompanyController {
 
     @Operation(
             summary = "Buscar empresa por ID",
-            description = "Retorna os dados de uma empresa específica através do seu ID"
+            description = "Retorna os dados de uma empresa específica através do seu ID. Requer autenticação."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Empresa encontrada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "404", description = "Empresa não encontrada",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/{id}")
     public ResponseEntity<CompanyResponseDTO> getCompanyById(
             @Parameter(description = "ID da empresa") @PathVariable Long id) {
@@ -108,13 +112,14 @@ public class CompanyController {
 
     @Operation(
             summary = "Criar nova empresa",
-            description = "Cadastra uma nova empresa parceira no sistema. O CNPJ e email devem ser únicos."
+            description = "Cadastra uma nova empresa parceira no sistema. O CNPJ e email devem ser únicos. Endpoint público (não requer autenticação)."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Empresa criada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos ou CNPJ/email já cadastrado",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @SecurityRequirements // Endpoint público
     @PostMapping
     public ResponseEntity<CompanyResponseDTO> createCompany(
             @Parameter(description = "Dados da empresa a ser criada")
