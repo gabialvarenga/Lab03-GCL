@@ -99,9 +99,20 @@ public class Student extends User {
     }
 
     @PrePersist
+    protected void onCreate() {
+        if (coinBalance == null) {
+            coinBalance = 0;
+        }
+        validateBalance();
+    }
+
     @PreUpdate
+    protected void onUpdate() {
+        validateBalance();
+    }
+
     private void validateBalance() {
-        if (coinBalance < 0) {
+        if (coinBalance != null && coinBalance < 0) {
             throw new IllegalArgumentException("Saldo não pode ser negativo");
         }
     }

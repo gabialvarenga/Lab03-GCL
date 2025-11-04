@@ -66,9 +66,20 @@ public class Teacher extends User {
     }
 
     @PrePersist
+    protected void onCreate() {
+        if (currentBalance == null) {
+            currentBalance = 1000;
+        }
+        validateBalance();
+    }
+
     @PreUpdate
+    protected void onUpdate() {
+        validateBalance();
+    }
+
     private void validateBalance() {
-        if (currentBalance < 0) {
+        if (currentBalance != null && currentBalance < 0) {
             throw new IllegalArgumentException("Saldo não pode ser negativo");
         }
     }

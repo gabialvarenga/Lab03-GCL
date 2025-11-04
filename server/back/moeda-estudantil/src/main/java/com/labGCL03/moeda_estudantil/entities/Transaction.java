@@ -55,12 +55,16 @@ public class Transaction {
         if (date == null) {
             date = LocalDateTime.now();
         }
+        validateAmount();
     }
 
-    @PrePersist
     @PreUpdate
+    protected void onUpdate() {
+        validateAmount();
+    }
+
     private void validateAmount() {
-        if (amount <= 0) {
+        if (amount != null && amount <= 0) {
             throw new IllegalArgumentException("Valor deve ser positivo");
         }
     }
