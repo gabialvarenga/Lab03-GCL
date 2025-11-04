@@ -26,7 +26,7 @@ public class InstitutionController {
     @Operation(
         summary = "Listar todas as instituições",
         description = "Retorna a lista de todas as instituições de ensino cadastradas no sistema. " +
-                "Os alunos devem selecionar uma destas instituições ao realizar o cadastro."
+                "Os alunos devem selecionar uma destas instituições ao realizar o cadastro. Alunos podem acessar."
     )
     @ApiResponses(value = {
         @ApiResponse(
@@ -36,8 +36,13 @@ public class InstitutionController {
                 mediaType = "application/json",
                 schema = @Schema(implementation = InstitutionDTO.class)
             )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Não autenticado"
         )
     })
+    @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<List<InstitutionDTO>> getAllInstitutions() {
         List<InstitutionDTO> institutions = institutionService.findAll();
         return ResponseEntity.ok(institutions);
@@ -46,7 +51,7 @@ public class InstitutionController {
     @GetMapping("/{id}")
     @Operation(
         summary = "Buscar instituição por ID",
-        description = "Retorna os detalhes de uma instituição específica"
+        description = "Retorna os detalhes de uma instituição específica. Alunos podem acessar."
     )
     @ApiResponses(value = {
         @ApiResponse(
@@ -58,10 +63,15 @@ public class InstitutionController {
             )
         ),
         @ApiResponse(
+            responseCode = "401",
+            description = "Não autenticado"
+        ),
+        @ApiResponse(
             responseCode = "404",
             description = "Instituição não encontrada"
         )
     })
+    @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<InstitutionDTO> getInstitutionById(@PathVariable Long id) {
         InstitutionDTO institution = institutionService.findById(id);
         return ResponseEntity.ok(institution);
@@ -70,7 +80,7 @@ public class InstitutionController {
     @GetMapping("/name/{name}")
     @Operation(
         summary = "Buscar instituição por nome",
-        description = "Retorna uma instituição pelo nome exato"
+        description = "Retorna uma instituição pelo nome exato. Alunos podem acessar."
     )
     @ApiResponses(value = {
         @ApiResponse(
@@ -82,10 +92,15 @@ public class InstitutionController {
             )
         ),
         @ApiResponse(
+            responseCode = "401",
+            description = "Não autenticado"
+        ),
+        @ApiResponse(
             responseCode = "404",
             description = "Instituição não encontrada"
         )
     })
+    @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<InstitutionDTO> getInstitutionByName(@PathVariable String name) {
         InstitutionDTO institution = institutionService.findByName(name);
         return ResponseEntity.ok(institution);

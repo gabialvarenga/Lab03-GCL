@@ -47,10 +47,10 @@ public class SecurityConfig {
                             "/webjars/**"
                         ).permitAll()
                         
-                        // Instituições - Apenas leitura para todos autenticados
-                        .requestMatchers(HttpMethod.GET, "/api/institutions/**").authenticated()
+                        // Instituições - Alunos podem fazer tudo (apenas GET existe), outros autenticados também
+                        .requestMatchers(HttpMethod.GET, "/api/institutions/**").hasAnyRole("STUDENT", "TEACHER", "COMPANY", "ADMIN")
                         
-                        // Alunos - Apenas o próprio aluno ou admin
+                        // Alunos - STUDENT tem acesso completo aos endpoints de aluno
                         .requestMatchers(HttpMethod.GET, "/api/students/**").hasAnyRole("STUDENT", "TEACHER", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/students/**").hasAnyRole("STUDENT", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/students/**").hasAnyRole("STUDENT", "ADMIN")
@@ -62,14 +62,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/teachers/**").hasAnyRole("TEACHER", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/teachers/**").hasRole("ADMIN")
                         
-                        // Empresas - Própria empresa ou admin
-                        .requestMatchers(HttpMethod.GET, "/api/companies/**").authenticated()
+                        // Empresas - STUDENT pode apenas consultar (GET), COMPANY e ADMIN podem gerenciar
+                        .requestMatchers(HttpMethod.GET, "/api/companies/**").hasAnyRole("STUDENT", "COMPANY", "TEACHER", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/companies/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/companies/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/companies/**").hasRole("ADMIN")
                         
-                        // Vantagens - Visualização para todos autenticados, gestão para empresas
-                        .requestMatchers(HttpMethod.GET, "/api/advantages/**").authenticated()
+                        // Vantagens - STUDENT pode apenas consultar (GET), COMPANY e ADMIN podem gerenciar
+                        .requestMatchers(HttpMethod.GET, "/api/advantages/**").hasAnyRole("STUDENT", "COMPANY", "TEACHER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/advantages").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/advantages/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/advantages/**").hasAnyRole("COMPANY", "ADMIN")

@@ -35,13 +35,15 @@ public class CompanyController {
 
     @Operation(
             summary = "Listar todas as empresas",
-            description = "Retorna uma lista com todas as empresas parceiras cadastradas no sistema"
+            description = "Retorna uma lista com todas as empresas parceiras cadastradas no sistema. Alunos podem acessar."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de empresas retornada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping
     public ResponseEntity<List<CompanyResponseDTO>> getAllCompanies() {
         List<Company> companies = companyService.findAll();
@@ -54,7 +56,7 @@ public class CompanyController {
 
     @Operation(
             summary = "Buscar empresa por ID",
-            description = "Retorna os dados de uma empresa específica através do seu ID. Requer autenticação."
+            description = "Retorna os dados de uma empresa específica através do seu ID. Alunos podem acessar."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Empresa encontrada com sucesso"),
@@ -74,13 +76,15 @@ public class CompanyController {
 
     @Operation(
             summary = "Buscar empresa por email",
-            description = "Retorna os dados de uma empresa através do seu email"
+            description = "Retorna os dados de uma empresa através do seu email. Alunos podem acessar."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Empresa encontrada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "404", description = "Empresa não encontrada",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/email/{email}")
     public ResponseEntity<CompanyResponseDTO> getCompanyByEmail(
             @Parameter(description = "Email da empresa", example = "contato@empresa.com") 
@@ -93,13 +97,15 @@ public class CompanyController {
 
     @Operation(
             summary = "Buscar empresa por CNPJ",
-            description = "Retorna os dados de uma empresa através do seu CNPJ"
+            description = "Retorna os dados de uma empresa através do seu CNPJ. Alunos podem acessar."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Empresa encontrada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "404", description = "Empresa não encontrada",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/cnpj/{cnpj}")
     public ResponseEntity<CompanyResponseDTO> getCompanyByCnpj(
             @Parameter(description = "CNPJ da empresa", example = "12345678000190") 
@@ -132,15 +138,18 @@ public class CompanyController {
 
     @Operation(
             summary = "Atualizar empresa completamente",
-            description = "Atualiza todos os dados de uma empresa existente (PUT)"
+            description = "Atualiza todos os dados de uma empresa existente (PUT). Requer role COMPANY ou ADMIN."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Empresa atualizada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Sem permissão (apenas COMPANY ou ADMIN)"),
             @ApiResponse(responseCode = "404", description = "Empresa não encontrada",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/{id}")
     public ResponseEntity<CompanyResponseDTO> updateCompany(
             @Parameter(description = "ID da empresa") @PathVariable Long id,
@@ -155,13 +164,16 @@ public class CompanyController {
 
     @Operation(
             summary = "Atualizar empresa parcialmente",
-            description = "Atualiza apenas os campos fornecidos de uma empresa existente (PATCH)"
+            description = "Atualiza apenas os campos fornecidos de uma empresa existente (PATCH). Requer role COMPANY ou ADMIN."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Empresa atualizada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Sem permissão (apenas COMPANY ou ADMIN)"),
             @ApiResponse(responseCode = "404", description = "Empresa não encontrada",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @PatchMapping("/{id}")
     public ResponseEntity<CompanyResponseDTO> partialUpdateCompany(
             @Parameter(description = "ID da empresa") @PathVariable Long id,
@@ -176,15 +188,18 @@ public class CompanyController {
 
     @Operation(
             summary = "Deletar empresa",
-            description = "Remove uma empresa do sistema. Não é possível deletar empresas que possuem vantagens cadastradas."
+            description = "Remove uma empresa do sistema. Não é possível deletar empresas que possuem vantagens cadastradas. Requer role ADMIN."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Empresa deletada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Não é possível deletar empresa com vantagens cadastradas",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Sem permissão (apenas ADMIN)"),
             @ApiResponse(responseCode = "404", description = "Empresa não encontrada",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCompany(
             @Parameter(description = "ID da empresa") 

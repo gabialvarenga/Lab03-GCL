@@ -33,13 +33,15 @@ public class AdvantageController {
 
     @Operation(
             summary = "Listar todas as vantagens",
-            description = "Retorna uma lista com todas as vantagens cadastradas no sistema"
+            description = "Retorna uma lista com todas as vantagens cadastradas no sistema. Alunos podem acessar."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de vantagens retornada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "Bearer Authentication")
     @GetMapping
     public ResponseEntity<List<AdvantageResponseDTO>> getAllAdvantages() {
         List<Advantage> advantages = advantageService.findAll();
@@ -52,13 +54,15 @@ public class AdvantageController {
 
     @Operation(
             summary = "Buscar vantagem por ID",
-            description = "Retorna os dados de uma vantagem específica através do seu ID"
+            description = "Retorna os dados de uma vantagem específica através do seu ID. Alunos podem acessar."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Vantagem encontrada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "404", description = "Vantagem não encontrada",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/{id}")
     public ResponseEntity<AdvantageResponseDTO> getAdvantageById(
             @Parameter(description = "ID da vantagem") @PathVariable Long id) {
@@ -70,13 +74,15 @@ public class AdvantageController {
 
     @Operation(
             summary = "Listar vantagens de uma empresa",
-            description = "Retorna todas as vantagens oferecidas por uma empresa específica"
+            description = "Retorna todas as vantagens oferecidas por uma empresa específica. Alunos podem acessar."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de vantagens retornada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "404", description = "Empresa não encontrada",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/company/{companyId}")
     public ResponseEntity<List<AdvantageResponseDTO>> getAdvantagesByCompany(
             @Parameter(description = "ID da empresa") @PathVariable Long companyId) {
@@ -90,13 +96,15 @@ public class AdvantageController {
 
     @Operation(
             summary = "Buscar vantagens dentro do orçamento",
-            description = "Retorna vantagens que custam até o valor especificado em moedas"
+            description = "Retorna vantagens que custam até o valor especificado em moedas. Alunos podem acessar."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de vantagens retornada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Valor inválido",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado")
     })
+    @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/budget/{maxCost}")
     public ResponseEntity<List<AdvantageResponseDTO>> getAdvantagesWithinBudget(
             @Parameter(description = "Custo máximo em moedas", example = "100") 
@@ -111,13 +119,15 @@ public class AdvantageController {
 
     @Operation(
             summary = "Buscar vantagens por nome",
-            description = "Retorna vantagens que contém o texto especificado no nome"
+            description = "Retorna vantagens que contém o texto especificado no nome. Alunos podem acessar."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de vantagens retornada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Nome inválido",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado")
     })
+    @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/search")
     public ResponseEntity<List<AdvantageResponseDTO>> searchAdvantagesByName(
             @Parameter(description = "Texto para busca no nome", example = "desconto") 
@@ -132,15 +142,18 @@ public class AdvantageController {
 
     @Operation(
             summary = "Criar nova vantagem",
-            description = "Cadastra uma nova vantagem no sistema. Deve ser associada a uma empresa."
+            description = "Cadastra uma nova vantagem no sistema. Deve ser associada a uma empresa. Requer role COMPANY ou ADMIN."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Vantagem criada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Sem permissão (apenas COMPANY ou ADMIN)"),
             @ApiResponse(responseCode = "404", description = "Empresa não encontrada",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "Bearer Authentication")
     @PostMapping
     public ResponseEntity<AdvantageResponseDTO> createAdvantage(
             @Parameter(description = "Dados da vantagem a ser criada")
@@ -153,15 +166,18 @@ public class AdvantageController {
 
     @Operation(
             summary = "Atualizar vantagem completamente",
-            description = "Atualiza todos os dados de uma vantagem existente (PUT)"
+            description = "Atualiza todos os dados de uma vantagem existente (PUT). Requer role COMPANY ou ADMIN."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Vantagem atualizada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Sem permissão (apenas COMPANY ou ADMIN)"),
             @ApiResponse(responseCode = "404", description = "Vantagem não encontrada",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/{id}")
     public ResponseEntity<AdvantageResponseDTO> updateAdvantage(
             @Parameter(description = "ID da vantagem") @PathVariable Long id,
@@ -176,13 +192,16 @@ public class AdvantageController {
 
     @Operation(
             summary = "Atualizar vantagem parcialmente",
-            description = "Atualiza apenas os campos fornecidos de uma vantagem existente (PATCH)"
+            description = "Atualiza apenas os campos fornecidos de uma vantagem existente (PATCH). Requer role COMPANY ou ADMIN."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Vantagem atualizada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Sem permissão (apenas COMPANY ou ADMIN)"),
             @ApiResponse(responseCode = "404", description = "Vantagem não encontrada",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "Bearer Authentication")
     @PatchMapping("/{id}")
     public ResponseEntity<AdvantageResponseDTO> partialUpdateAdvantage(
             @Parameter(description = "ID da vantagem") @PathVariable Long id,
@@ -197,15 +216,18 @@ public class AdvantageController {
 
     @Operation(
             summary = "Deletar vantagem",
-            description = "Remove uma vantagem do sistema. Não é possível deletar vantagens que já foram resgatadas."
+            description = "Remove uma vantagem do sistema. Não é possível deletar vantagens que já foram resgatadas. Requer role COMPANY ou ADMIN."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Vantagem deletada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Não é possível deletar vantagem já resgatada",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Sem permissão (apenas COMPANY ou ADMIN)"),
             @ApiResponse(responseCode = "404", description = "Vantagem não encontrada",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAdvantage(
             @Parameter(description = "ID da vantagem") 
