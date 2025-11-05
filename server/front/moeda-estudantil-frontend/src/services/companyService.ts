@@ -1,9 +1,14 @@
 import api from './api';
-import type { Company, Advantage, AdvantageRequestDTO } from '../types';
+import type { Company, Advantage, AdvantageRequestDTO, CompanyUpdateDTO } from '../types';
 
 export const companyService = {
   getProfile: async (id: number): Promise<Company> => {
     const response = await api.get<Company>(`/companies/${id}`);
+    return response.data;
+  },
+
+  updateProfile: async (id: number, data: CompanyUpdateDTO): Promise<Company> => {
+    const response = await api.put<Company>(`/companies/${id}`, data);
     return response.data;
   },
 

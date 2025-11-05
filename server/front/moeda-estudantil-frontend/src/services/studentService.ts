@@ -1,9 +1,14 @@
 import api from './api';
-import type { Student, Transaction, Advantage, PurchaseDTO, PurchaseResponse } from '../types';
+import type { Student, Transaction, Advantage, PurchaseDTO, PurchaseResponse, StudentUpdateDTO } from '../types';
 
 export const studentService = {
   getProfile: async (id: number): Promise<Student> => {
     const response = await api.get<Student>(`/students/${id}`);
+    return response.data;
+  },
+
+  updateProfile: async (id: number, data: StudentUpdateDTO): Promise<Student> => {
+    const response = await api.put<Student>(`/students/${id}`, data);
     return response.data;
   },
 

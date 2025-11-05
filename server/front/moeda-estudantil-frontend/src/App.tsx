@@ -10,6 +10,7 @@ import Register from './pages/Register';
 import StudentDashboard from './pages/StudentDashboard';
 import StudentStatement from './pages/StudentStatement';
 import StudentAdvantages from './pages/StudentAdvantages';
+import StudentProfile from './pages/StudentProfile';
 
 // Professor Pages
 import ProfessorDashboard from './pages/ProfessorDashboard';
@@ -20,6 +21,7 @@ import ProfessorStatement from './pages/ProfessorStatement';
 import CompanyDashboard from './pages/CompanyDashboard';
 import CompanyAdvantages from './pages/CompanyAdvantages';
 import AdvantageForm from './pages/AdvantageForm';
+import CompanyProfile from './pages/CompanyProfile';
 
 import './App.css';
 
@@ -62,7 +64,7 @@ function App() {
             path="/student/profile"
             element={
               <ProtectedRoute allowedRole="STUDENT">
-                <StudentDashboard />
+                <StudentProfile />
               </ProtectedRoute>
             }
           />
@@ -138,7 +140,7 @@ function App() {
             path="/company/profile"
             element={
               <ProtectedRoute allowedRole="COMPANY">
-                <CompanyDashboard />
+                <CompanyProfile />
               </ProtectedRoute>
             }
           />

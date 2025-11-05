@@ -90,7 +90,7 @@ const AdvantageForm: React.FC = () => {
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
-          <button onClick={() => navigate('/company/dashboard')} className="btn-back">
+          <button onClick={() => navigate('/company/advantages')} className="btn-back">
             ← Voltar
           </button>
           <h1 className="text-3xl font-bold text-black-800">{isEdit ? 'Editar Vantagem' : 'Nova Vantagem'}</h1>

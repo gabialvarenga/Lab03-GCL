@@ -17,8 +17,11 @@ export interface Student {
   rg: string;
   address: string;
   course: string;
-  balance: number;
-  institution: Institution;
+  balance?: number;
+  coinBalance?: number;
+  institution?: Institution;
+  institutionId?: number;
+  institutionName?: string;
 }
 
 export interface StudentRegistrationDTO {
@@ -30,6 +33,15 @@ export interface StudentRegistrationDTO {
   address: string;
   course: string;
   institutionId: number;
+}
+
+export interface StudentUpdateDTO {
+  name?: string;
+  cpf?: string;
+  rg?: string;
+  address?: string;
+  course?: string;
+  institutionId?: number;
 }
 
 // Professor Types
@@ -57,6 +69,12 @@ export interface CompanyRegistrationDTO {
   email: string;
   password: string;
   cnpj: string;
+  address?: string;
+}
+
+export interface CompanyUpdateDTO {
+  name?: string;
+  cnpj?: string;
   address?: string;
 }
 

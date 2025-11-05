@@ -57,15 +57,13 @@ const StudentDashboard: React.FC = () => {
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
+          <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Bem-vindo, {student?.name}!</h1>
           <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl shadow-lg p-8 text-white">
             <h3 className="text-lg font-medium mb-2 opacity-90">Saldo Atual</h3>
-            <p className="text-5xl font-bold">{student?.balance || 0} <span className="text-2xl">moedas</span></p>
+            <p className="text-5xl font-bold">{student?.balance || student?.coinBalance || 0} <span className="text-2xl">moedas</span></p>
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        </div>        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div 
             className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-200 cursor-pointer border border-gray-200 hover:border-blue-500"
             onClick={() => navigate('/student/advantages')}
@@ -103,7 +101,7 @@ const StudentDashboard: React.FC = () => {
             </div>
             <div className="border-l-4 border-blue-500 pl-4">
               <span className="text-sm text-gray-500 font-medium block mb-1">Instituição</span>
-              <span className="text-lg text-gray-900">{student?.institution?.name}</span>
+              <span className="text-lg text-gray-900">{student?.institution?.name || student?.institutionName || 'Não informada'}</span>
             </div>
             <div className="border-l-4 border-blue-500 pl-4">
               <span className="text-sm text-gray-500 font-medium block mb-1">Email</span>
