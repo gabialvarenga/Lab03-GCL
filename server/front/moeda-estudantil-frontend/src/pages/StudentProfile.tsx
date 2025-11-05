@@ -16,8 +16,7 @@ const StudentProfile: React.FC = () => {
 
   const [formData, setFormData] = useState<StudentUpdateDTO>({
     name: '',
-    cpf: '',
-    rg: '',
+    password: '',
     address: '',
     course: '',
     institutionId: undefined,
@@ -41,7 +40,7 @@ const StudentProfile: React.FC = () => {
       
       setFormData({
         name: studentData.name,
-        cpf: studentData.cpf,
+        password: '',
         rg: studentData.rg,
         address: studentData.address,
         course: studentData.course,
@@ -68,7 +67,12 @@ const StudentProfile: React.FC = () => {
 
     setSaving(true);
     try {
-      const updatedStudent = await studentService.updateProfile(userId, formData);
+      const dataToSend = { ...formData };
+      if (!dataToSend.password || dataToSend.password.trim() === '') {
+        delete dataToSend.password;
+      }
+      
+      const updatedStudent = await studentService.updateProfile(userId, dataToSend);
       setStudent(updatedStudent);
       setIsEditing(false);
       alert('Perfil atualizado com sucesso!');
@@ -83,7 +87,7 @@ const StudentProfile: React.FC = () => {
     if (student) {
       setFormData({
         name: student.name,
-        cpf: student.cpf,
+        password: '',
         rg: student.rg,
         address: student.address,
         course: student.course,
@@ -108,7 +112,7 @@ const StudentProfile: React.FC = () => {
           <button onClick={() => navigate('/student/dashboard')} className="btn-back">
             ← Voltar
           </button>
-          <h1 className="text-3xl font-bold text-blue-800">Meu Perfil</h1>
+          <h1 className="text-3xl font-bold text-black-800">Meu Perfil</h1>
           <div className="w-24"></div>
         </div>
 
@@ -176,7 +180,7 @@ const StudentProfile: React.FC = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Editar Perfil</h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
+                <div className="md:col-span-2">
                   <label htmlFor="name" className="block text-gray-700 font-medium mb-2">Nome Completo *</label>
                   <input
                     type="text"
@@ -190,14 +194,27 @@ const StudentProfile: React.FC = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="cpf" className="block text-gray-700 font-medium mb-2">CPF *</label>
+                  <label htmlFor="password" className="block text-gray-700 font-medium mb-2">Nova Senha (deixe em branco para manter)</label>
                   <input
-                    type="text"
-                    id="cpf"
-                    name="cpf"
-                    value={formData.cpf}
+                    type="password"
+                    id="password"
+                    name="password"
+                    value={formData.password}
                     onChange={handleChange}
-                    required
+                    placeholder="••••••••"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor="rg" className="block text-gray-700 font-medium mb-2">RG *</label>
+                                    <input
+                                        type="text"
+                                        id="rg"
+                                        name="rg"
+                                        value={formData.rg}
+                                        onChange={handleChange}
+                                        required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>

@@ -90,7 +90,7 @@ const StudentAdvantages: React.FC = () => {
                   <p className="text-sm text-gray-500 mb-3">Por: {advantage.companyName || advantage.company?.name}</p>
                   <p className="text-gray-600 mb-4 flex-grow">{advantage.description}</p>
                   <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-                    <span className="text-2xl font-bold text-blue-600">{advantage.costInCoins} 🪙</span>
+                    <span className="text-2xl font-bold text-black-600">{advantage.costInCoins} 🪙</span>
                     <button 
                       onClick={() => setSelectedAdvantage(advantage)} 
                       className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200"
@@ -111,7 +111,7 @@ const StudentAdvantages: React.FC = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Confirmar Resgate</h2>
             <p className="text-gray-600 mb-2">Você está prestes a resgatar:</p>
             <h3 className="text-xl font-semibold text-gray-900 mb-4">{selectedAdvantage.name}</h3>
-            <p className="text-3xl font-bold text-blue-600 mb-2">{selectedAdvantage.costInCoins} moedas</p>
+            <p className="text-3xl font-bold text-black-600 mb-2">{selectedAdvantage.costInCoins} moedas</p>
             <p className="text-gray-600 mb-4">{selectedAdvantage.description}</p>
             <p className="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-3 mb-6 rounded">
               ⚠️ Esta ação não pode ser desfeita

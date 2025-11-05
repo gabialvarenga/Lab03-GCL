@@ -14,6 +14,7 @@ const CompanyProfile: React.FC = () => {
 
   const [formData, setFormData] = useState<CompanyUpdateDTO>({
     name: '',
+    password: '',
     cnpj: '',
     address: '',
   });
@@ -31,6 +32,7 @@ const CompanyProfile: React.FC = () => {
       
       setFormData({
         name: companyData.name,
+        password: '',
         cnpj: companyData.cnpj,
         address: companyData.address || '',
       });
@@ -55,7 +57,12 @@ const CompanyProfile: React.FC = () => {
 
     setSaving(true);
     try {
-      const updatedCompany = await companyService.updateProfile(userId, formData);
+      const dataToSend = { ...formData };
+      if (!dataToSend.password || dataToSend.password.trim() === '') {
+        delete dataToSend.password;
+      }
+      
+      const updatedCompany = await companyService.updateProfile(userId, dataToSend);
       setCompany(updatedCompany);
       setIsEditing(false);
       alert('Perfil atualizado com sucesso!');
@@ -70,6 +77,7 @@ const CompanyProfile: React.FC = () => {
     if (company) {
       setFormData({
         name: company.name,
+        password: '',
         cnpj: company.cnpj,
         address: company.address || '',
       });
@@ -92,7 +100,7 @@ const CompanyProfile: React.FC = () => {
           <button onClick={() => navigate('/company/dashboard')} className="btn-back">
             ← Voltar
           </button>
-          <h1 className="text-3xl font-bold text-purple-800">Perfil da Empresa</h1>
+          <h1 className="text-3xl font-bold text-black-800">Perfil da Empresa</h1>
           <div className="w-24"></div>
         </div>
 
@@ -147,6 +155,19 @@ const CompanyProfile: React.FC = () => {
                     value={formData.name}
                     onChange={handleChange}
                     required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="password" className="block text-gray-700 font-medium mb-2">Nova Senha (deixe em branco para manter)</label>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>

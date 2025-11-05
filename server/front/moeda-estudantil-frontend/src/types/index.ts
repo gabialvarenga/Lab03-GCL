@@ -37,7 +37,8 @@ export interface StudentRegistrationDTO {
 
 export interface StudentUpdateDTO {
   name?: string;
-  cpf?: string;
+  email?: string;
+  password?: string;
   rg?: string;
   address?: string;
   course?: string;
@@ -74,6 +75,8 @@ export interface CompanyRegistrationDTO {
 
 export interface CompanyUpdateDTO {
   name?: string;
+  email?: string;
+  password?: string;
   cnpj?: string;
   address?: string;
 }

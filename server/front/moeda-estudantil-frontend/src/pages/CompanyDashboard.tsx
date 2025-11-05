@@ -101,7 +101,7 @@ const CompanyDashboard: React.FC = () => {
 
         <div className="bg-white rounded-xl shadow-md p-6">
           <h3 className="text-xl font-semibold text-gray-900 mb-6">Informações da Empresa</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="border-l-4 border-purple-500 pl-4">
               <span className="text-sm text-gray-500 font-medium block mb-1">Email</span>
               <span className="text-lg text-gray-900">{company?.email}</span>
