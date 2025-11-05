@@ -1,0 +1,136 @@
+
+export type UserRole = 'STUDENT' | 'PROFESSOR' | 'COMPANY';
+export type TransactionType = 'TRANSFER' | 'PURCHASE' | 'CREDIT';
+
+export interface User {
+  id: number;
+  email: string;
+  role: UserRole;
+}
+
+// Student Types
+export interface Student {
+  id: number;
+  name: string;
+  email: string;
+  cpf: string;
+  rg: string;
+  address: string;
+  course: string;
+  balance: number;
+  institution: Institution;
+}
+
+export interface StudentRegistrationDTO {
+  name: string;
+  email: string;
+  password: string;
+  cpf: string;
+  rg: string;
+  address: string;
+  course: string;
+  institutionId: number;
+}
+
+// Professor Types
+export interface Professor {
+  id: number;
+  name: string;
+  email: string;
+  cpf: string;
+  department: string;
+  balance: number;
+  institution: Institution;
+}
+
+// Company Types
+export interface Company {
+  id: number;
+  name: string;
+  email: string;
+  cnpj: string;
+  address?: string;
+}
+
+export interface CompanyRegistrationDTO {
+  name: string;
+  email: string;
+  password: string;
+  cnpj: string;
+  address?: string;
+}
+
+// Institution Types
+export interface Institution {
+  id: number;
+  name: string;
+  address?: string;
+}
+
+// Advantage Types
+export interface Advantage {
+  id: number;
+  name: string;
+  description: string;
+  costInCoins: number;
+  photo?: string;
+  companyId: number;
+  companyName: string;
+  company?: Company;
+  timesRedeemed?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface AdvantageRequestDTO {
+  name: string;
+  description: string;
+  costInCoins: number;
+  photo?: string;
+  companyId?: number;
+}
+
+// Transaction Types
+export interface Transaction {
+  id: number;
+  amount: number;
+  description: string;
+  type: TransactionType;
+  date: string;
+  sender?: User;
+  receiver?: User;
+  advantage?: Advantage;
+  reason: string;
+}
+
+export interface TransferCoinsDTO {
+  studentId: number;
+  amount: number;
+  reason: string;
+}
+
+// Auth Types
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  role: UserRole;
+  userId: number;
+  email: string;
+}
+
+// Purchase Types
+export interface PurchaseDTO {
+  advantageId: number;
+  studentId: number;
+}
+
+export interface PurchaseResponse {
+  code: string;
+  advantage: Advantage;
+  student: Student;
+  purchaseDate: string;
+}

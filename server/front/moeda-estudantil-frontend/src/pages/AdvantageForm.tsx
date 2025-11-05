@@ -1,0 +1,170 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { companyService } from '../services/companyService';
+
+const AdvantageForm: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const isEdit = !!id;
+  
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    costInCoins: 0,
+    photo: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(isEdit);
+  const { userId } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isEdit && userId) {
+      loadAdvantage();
+    }
+  }, [isEdit, id, userId]);
+
+  const loadAdvantage = async () => {
+    if (!userId || !id) return;
+    
+    try {
+      const advantages = await companyService.getAdvantages(userId);
+      const advantage = advantages.find(adv => adv.id === parseInt(id));
+      
+      if (advantage) {
+        setFormData({
+          name: advantage.name,
+          description: advantage.description,
+          costInCoins: advantage.costInCoins,
+          photo: advantage.photo || '',
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao carregar vantagem:', error);
+    } finally {
+      setLoadingData(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === 'costInCoins' ? parseInt(value) || 0 : value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!userId) return;
+    
+    if (formData.costInCoins <= 0) {
+      alert('O custo deve ser maior que zero');
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      if (isEdit && id) {
+        await companyService.updateAdvantage(userId, parseInt(id), formData);
+        alert('Vantagem atualizada com sucesso!');
+      } else {
+        await companyService.createAdvantage(userId, formData);
+        alert('Vantagem cadastrada com sucesso!');
+      }
+      navigate('/company/advantages');
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Erro ao salvar vantagem. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loadingData) {
+    return <div className="flex items-center justify-center min-h-screen">Carregando...</div>;
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-8">
+      <div className="max-w-2xl mx-auto">
+        <div className="flex items-center gap-4 mb-8">
+          <button onClick={() => navigate('/company/dashboard')} className="btn-back">
+            ← Voltar
+          </button>
+          <h1 className="text-3xl font-bold text-black-800">{isEdit ? 'Editar Vantagem' : 'Nova Vantagem'}</h1>
+        </div>
+
+        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-8">
+          <div className="mb-6">
+            <label htmlFor="name" className="block text-gray-700 font-medium mb-2">Nome da Vantagem *</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              placeholder="Ex: Desconto de 20% no restaurante"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+          </div>
+
+          <div className="mb-6">
+            <label htmlFor="description" className="block text-gray-700 font-medium mb-2">Descrição *</label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              required
+              rows={5}
+              placeholder="Descreva detalhadamente a vantagem oferecida..."
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+            />
+          </div>
+
+          <div className="mb-6">
+            <label htmlFor="costInCoins" className="block text-gray-700 font-medium mb-2">Custo em Moedas *</label>
+            <input
+              type="number"
+              id="costInCoins"
+              name="costInCoins"
+              value={formData.costInCoins}
+              onChange={handleChange}
+              required
+              min="1"
+              placeholder="Ex: 100"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+          </div>
+
+          <div className="mb-6">
+            <label htmlFor="photo" className="block text-gray-700 font-medium mb-2">URL da Foto</label>
+            <input
+              type="url"
+              id="photo"
+              name="photo"
+              value={formData.photo}
+              onChange={handleChange}
+              placeholder="https://exemplo.com/foto.jpg"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+            {formData.photo && (
+              <div className="mt-4 border border-gray-300 rounded-lg overflow-hidden">
+                <img src={formData.photo} alt="Preview" className="w-full h-64 object-cover" />
+              </div>
+            )}
+          </div>
+
+          <button type="submit" disabled={loading} className="btn-primary w-full">
+            {loading ? 'Salvando...' : (isEdit ? 'Atualizar Vantagem' : 'Cadastrar Vantagem')}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default AdvantageForm;
