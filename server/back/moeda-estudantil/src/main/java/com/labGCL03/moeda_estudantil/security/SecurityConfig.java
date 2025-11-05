@@ -26,16 +26,19 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final CustomUserDetailsService userDetailsService;
+    private final org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints públicos - Login e cadastro
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/students").permitAll() // Alunos podem se cadastrar
                         .requestMatchers(HttpMethod.POST, "/api/companies").permitAll() // Empresas podem se cadastrar
+                        .requestMatchers(HttpMethod.GET, "/api/institutions/**").permitAll() // Instituições públicas para tela de registro
                         
                         // Swagger/OpenAPI - Permitir acesso completo à documentação
                         .requestMatchers(
@@ -46,9 +49,6 @@ public class SecurityConfig {
                             "/swagger-resources/**",
                             "/webjars/**"
                         ).permitAll()
-                        
-                        // Instituições - Alunos podem fazer tudo (apenas GET existe), outros autenticados também
-                        .requestMatchers(HttpMethod.GET, "/api/institutions/**").hasAnyRole("STUDENT", "TEACHER", "COMPANY", "ADMIN")
                         
                         // Alunos - STUDENT tem acesso completo aos endpoints de aluno
                         .requestMatchers(HttpMethod.GET, "/api/students/**").hasAnyRole("STUDENT", "TEACHER", "ADMIN")
