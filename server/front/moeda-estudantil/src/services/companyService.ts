@@ -37,5 +37,14 @@ export const companyService = {
 
   deleteAdvantage: async (_companyId: number, advantageId: number): Promise<void> => {
     await api.delete(`/advantages/${advantageId}`);
+  },
+
+  uploadImage: async (formData: FormData): Promise<{ url: string }> => {
+    const response = await api.post<{ url: string }>('/upload/image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
   }
 };

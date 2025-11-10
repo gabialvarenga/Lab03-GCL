@@ -125,14 +125,22 @@ const CompanyProfile: React.FC = () => {
         <div className="bg-white rounded-xl shadow-md p-8">
           {!isEditing ? (
             <>
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Informações da Empresa</h2>
-                <button 
-                  onClick={() => setIsEditing(true)}
-                  className="btn-primary"
-                >
-                  Editar Perfil
-                </button>
+               <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Informações Pessoais</h2>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="btn-primary"
+                  >
+                    Editar Perfil
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteModal(true)}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                  >
+                    Excluir Perfil
+                  </button>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -159,15 +167,6 @@ const CompanyProfile: React.FC = () => {
                 )}
               </div>
 
-              {/* Danger Zone */}
-              <div className="mt-8 pt-6 border-t border-gray-200">
-                <button 
-                  onClick={() => setShowDeleteModal(true)}
-                  className="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
-                >
-                  Excluir Perfil
-                </button>
-              </div>
             </>
           ) : (
             <form onSubmit={handleSubmit}>

@@ -40,6 +40,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/companies").permitAll() // Empresas podem se cadastrar
                         .requestMatchers(HttpMethod.GET, "/api/institutions/**").permitAll() // Instituições públicas para tela de registro
                         
+                        // Upload de arquivos e servir imagens
+                        .requestMatchers("/uploads/**").permitAll() // Servir imagens públicas
+                        .requestMatchers(HttpMethod.POST, "/api/upload/**").hasAnyRole("COMPANY", "ADMIN") // Upload apenas para empresas
+                        .requestMatchers(HttpMethod.DELETE, "/api/upload/**").hasAnyRole("COMPANY", "ADMIN")
+                        
                         // Swagger/OpenAPI - Permitir acesso completo à documentação
                         .requestMatchers(
                             "/swagger-ui/**", 

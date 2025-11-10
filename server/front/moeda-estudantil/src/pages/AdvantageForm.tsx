@@ -13,6 +13,8 @@ const AdvantageForm: React.FC = () => {
     costInCoins: 0,
     photo: '',
   });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(isEdit);
   const { userId } = useAuth();
@@ -38,6 +40,9 @@ const AdvantageForm: React.FC = () => {
           costInCoins: advantage.costInCoins,
           photo: advantage.photo || '',
         });
+        if (advantage.photo) {
+          setPreviewUrl(advantage.photo);
+        }
       }
     } catch (error) {
       console.error('Erro ao carregar vantagem:', error);
@@ -54,6 +59,38 @@ const AdvantageForm: React.FC = () => {
     }));
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validar tipo de arquivo
+      if (!file.type.startsWith('image/')) {
+        alert('Por favor, selecione apenas arquivos de imagem');
+        return;
+      }
+      
+      // Validar tamanho (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('A imagem deve ter no máximo 5MB');
+        return;
+      }
+      
+      setSelectedFile(file);
+      
+      // Criar preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedFile(null);
+    setPreviewUrl('');
+    setFormData(prev => ({ ...prev, photo: '' }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -67,11 +104,33 @@ const AdvantageForm: React.FC = () => {
     setLoading(true);
     
     try {
+      let photoUrl = formData.photo;
+      
+      // Se há um arquivo selecionado, fazer upload primeiro
+      if (selectedFile) {
+        const uploadFormData = new FormData();
+        uploadFormData.append('file', selectedFile);
+        
+        try {
+          const uploadResponse = await companyService.uploadImage(uploadFormData);
+          photoUrl = uploadResponse.url;
+        } catch (uploadError: any) {
+          alert(uploadError.response?.data?.message || 'Erro ao fazer upload da imagem');
+          setLoading(false);
+          return;
+        }
+      }
+      
+      const advantageData = {
+        ...formData,
+        photo: photoUrl,
+      };
+      
       if (isEdit && id) {
-        await companyService.updateAdvantage(userId, parseInt(id), formData);
+        await companyService.updateAdvantage(userId, parseInt(id), advantageData);
         alert('Vantagem atualizada com sucesso!');
       } else {
-        await companyService.createAdvantage(userId, formData);
+        await companyService.createAdvantage(userId, advantageData);
         alert('Vantagem cadastrada com sucesso!');
       }
       navigate('/company/advantages');
@@ -141,21 +200,33 @@ const AdvantageForm: React.FC = () => {
           </div>
 
           <div className="mb-6">
-            <label htmlFor="photo" className="block text-gray-700 font-medium mb-2">URL da Foto</label>
-            <input
-              type="url"
-              id="photo"
-              name="photo"
-              value={formData.photo}
-              onChange={handleChange}
-              placeholder="https://exemplo.com/foto.jpg"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
-            {formData.photo && (
-              <div className="mt-4 border border-gray-300 rounded-lg overflow-hidden">
-                <img src={formData.photo} alt="Preview" className="w-full h-64 object-cover" />
-              </div>
-            )}
+            <label htmlFor="photo" className="block text-gray-700 font-medium mb-2">Foto da Vantagem</label>
+            <div className="space-y-4">
+              <input
+                type="file"
+                id="photo"
+                name="photo"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+              />
+              <p className="text-sm text-gray-500">Formatos aceitos: JPG, PNG, GIF (máx. 5MB)</p>
+              
+              {previewUrl && (
+                <div className="relative mt-4 border border-gray-300 rounded-lg overflow-hidden">
+                  <img src={previewUrl} alt="Preview" className="w-full h-64 object-cover" />
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className="absolute top-2 right-2 bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition-colors"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           <button type="submit" disabled={loading} className="btn-primary w-full">
