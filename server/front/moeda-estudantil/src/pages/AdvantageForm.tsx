@@ -12,6 +12,8 @@ const AdvantageForm: React.FC = () => {
     description: '',
     costInCoins: 0,
     photo: '',
+    photoName: '',
+    photoType: '',
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
@@ -39,6 +41,8 @@ const AdvantageForm: React.FC = () => {
           description: advantage.description,
           costInCoins: advantage.costInCoins,
           photo: advantage.photo || '',
+          photoName: advantage.photoName || '',
+          photoType: advantage.photoType || '',
         });
         if (advantage.photo) {
           setPreviewUrl(advantage.photo);
@@ -76,10 +80,17 @@ const AdvantageForm: React.FC = () => {
       
       setSelectedFile(file);
       
-      // Criar preview
+      // Converter para Base64 e criar preview
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreviewUrl(reader.result as string);
+        const base64String = reader.result as string;
+        setPreviewUrl(base64String);
+        setFormData(prev => ({
+          ...prev,
+          photo: base64String,
+          photoName: file.name,
+          photoType: file.type,
+        }));
       };
       reader.readAsDataURL(file);
     }
@@ -88,7 +99,12 @@ const AdvantageForm: React.FC = () => {
   const handleRemoveImage = () => {
     setSelectedFile(null);
     setPreviewUrl('');
-    setFormData(prev => ({ ...prev, photo: '' }));
+    setFormData(prev => ({ 
+      ...prev, 
+      photo: '', 
+      photoName: '', 
+      photoType: '' 
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -104,26 +120,14 @@ const AdvantageForm: React.FC = () => {
     setLoading(true);
     
     try {
-      let photoUrl = formData.photo;
-      
-      // Se há um arquivo selecionado, fazer upload primeiro
-      if (selectedFile) {
-        const uploadFormData = new FormData();
-        uploadFormData.append('file', selectedFile);
-        
-        try {
-          const uploadResponse = await companyService.uploadImage(uploadFormData);
-          photoUrl = uploadResponse.url;
-        } catch (uploadError: any) {
-          alert(uploadError.response?.data?.message || 'Erro ao fazer upload da imagem');
-          setLoading(false);
-          return;
-        }
-      }
-      
+      // Os dados da foto já estão em Base64 no formData
       const advantageData = {
-        ...formData,
-        photo: photoUrl,
+        name: formData.name,
+        description: formData.description,
+        costInCoins: formData.costInCoins,
+        photo: formData.photo || undefined,
+        photoName: formData.photoName || undefined,
+        photoType: formData.photoType || undefined,
       };
       
       if (isEdit && id) {

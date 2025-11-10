@@ -95,6 +95,8 @@ export interface Advantage {
   description: string;
   costInCoins: number;
   photo?: string;
+  photoName?: string;
+  photoType?: string;
   companyId: number;
   companyName: string;
   company?: Company;
@@ -108,6 +110,8 @@ export interface AdvantageRequestDTO {
   description: string;
   costInCoins: number;
   photo?: string;
+  photoName?: string;
+  photoType?: string;
   companyId?: number;
 }
 
