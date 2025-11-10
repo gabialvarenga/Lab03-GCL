@@ -26,10 +26,16 @@ public class AdvantageResponseDTO {
     @Schema(description = "Custo em moedas estudantis", example = "100")
     private Integer costInCoins;
 
-    @Schema(description = "URL da foto da vantagem", example = "https://example.com/photo.jpg")
+    @Schema(description = "Imagem da vantagem em Base64", example = "data:image/jpeg;base64,/9j/4AAQSkZJRg...")
     private String photo;
 
-    @Schema(description = "ID da empresa", example = "1")
+    @Schema(description = "Nome do arquivo da foto", example = "desconto.jpg")
+    private String photoName;
+
+    @Schema(description = "Tipo MIME da foto", example = "image/jpeg")
+    private String photoType;
+
+    @Schema(description = "ID da empresa que oferece a vantagem", example = "1")
     private Long companyId;
 
     @Schema(description = "Nome da empresa", example = "Tech Solutions LTDA")
@@ -54,6 +60,8 @@ public class AdvantageResponseDTO {
         this.description = advantage.getDescription();
         this.costInCoins = advantage.getCostInCoins();
         this.photo = advantage.getPhoto();
+        this.photoName = advantage.getPhotoName();
+        this.photoType = advantage.getPhotoType();
         this.companyId = advantage.getCompany() != null ? advantage.getCompany().getId() : null;
         this.companyName = advantage.getCompany() != null ? advantage.getCompany().getName() : null;
         // Evitar acesso a coleções lazy durante compra - definir como null ou 0 por padrão

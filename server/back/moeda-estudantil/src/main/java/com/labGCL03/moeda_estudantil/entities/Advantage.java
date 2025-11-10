@@ -33,7 +33,15 @@ public class Advantage {
     @Column(name = "cost_in_coins", nullable = false)
     private Integer costInCoins;
 
-    private String photo;
+    @Lob
+    @Column(name = "photo", columnDefinition = "LONGTEXT")
+    private String photo; // Armazena imagem em Base64
+
+    @Column(name = "photo_name")
+    private String photoName; // Nome original do arquivo
+
+    @Column(name = "photo_type")
+    private String photoType; // Tipo MIME (image/jpeg, image/png, etc.)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)

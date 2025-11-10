@@ -26,8 +26,15 @@ public class AdvantageRequestDTO {
     @Min(value = 1, message = "Custo deve ser no mínimo 1 moeda")
     private Integer costInCoins;
 
-    @Schema(description = "URL da foto da vantagem", example = "https://example.com/photo.jpg")
+    @Schema(description = "Imagem da vantagem em Base64 (com prefixo data:image/...;base64,)", 
+            example = "data:image/jpeg;base64,/9j/4AAQSkZJRg...")
     private String photo;
+
+    @Schema(description = "Nome do arquivo da foto", example = "desconto.jpg")
+    private String photoName;
+
+    @Schema(description = "Tipo MIME da foto", example = "image/jpeg")
+    private String photoType;
 
     @Schema(description = "ID da empresa que oferece a vantagem", example = "1")
     @NotNull(message = "ID da empresa é obrigatório")

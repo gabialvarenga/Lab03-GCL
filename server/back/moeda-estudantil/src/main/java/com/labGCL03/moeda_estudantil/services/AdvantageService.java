@@ -68,6 +68,8 @@ public class AdvantageService {
         advantage.setDescription(dto.getDescription());
         advantage.setCostInCoins(dto.getCostInCoins());
         advantage.setPhoto(dto.getPhoto());
+        advantage.setPhotoName(dto.getPhotoName());
+        advantage.setPhotoType(dto.getPhotoType());
         advantage.setCompany(company);
         
         Advantage savedAdvantage = advantageRepository.save(advantage);
@@ -99,6 +101,14 @@ public class AdvantageService {
         
         if (dto.getPhoto() != null) {
             advantage.setPhoto(dto.getPhoto());
+        }
+        
+        if (dto.getPhotoName() != null) {
+            advantage.setPhotoName(dto.getPhotoName());
+        }
+        
+        if (dto.getPhotoType() != null) {
+            advantage.setPhotoType(dto.getPhotoType());
         }
         
         Advantage updatedAdvantage = advantageRepository.save(advantage);

@@ -8,20 +8,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/upload")
@@ -30,17 +24,14 @@ import java.util.UUID;
 @Slf4j
 public class FileUploadController {
 
-    @Value("${file.upload-dir:uploads}")
-    private String uploadDir;
-
     @Operation(
-        summary = "Upload de imagem",
-        description = "Faz upload de uma imagem e retorna a URL pública do arquivo. Formatos aceitos: JPG, PNG, GIF. Tamanho máximo: 5MB."
+        summary = "Upload de imagem em Base64",
+        description = "Converte uma imagem para Base64 e retorna a string codificada. Formatos aceitos: JPG, PNG, GIF. Tamanho máximo: 5MB."
     )
     @ApiResponses(value = {
         @ApiResponse(
             responseCode = "200",
-            description = "Imagem enviada com sucesso",
+            description = "Imagem convertida com sucesso",
             content = @Content(schema = @Schema(implementation = Map.class))
         ),
         @ApiResponse(
@@ -53,7 +44,7 @@ public class FileUploadController {
         ),
         @ApiResponse(
             responseCode = "500",
-            description = "Erro ao salvar arquivo"
+            description = "Erro ao processar arquivo"
         )
     })
     @SecurityRequirement(name = "Bearer Authentication")
@@ -76,67 +67,29 @@ public class FileUploadController {
                 return ResponseEntity.badRequest().body(Map.of("message", "O arquivo deve ter no máximo 5MB"));
             }
 
-            // Criar diretório se não existir
-            Path uploadPath = Paths.get(uploadDir);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
+            // Converter para Base64
+            byte[] imageBytes = file.getBytes();
+            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+            
+            // Criar data URL completo
+            String dataUrl = "data:" + contentType + ";base64," + base64Image;
 
-            // Gerar nome único para o arquivo
-            String originalFilename = file.getOriginalFilename();
-            String extension = "";
-            if (originalFilename != null && originalFilename.contains(".")) {
-                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            }
-            String filename = UUID.randomUUID().toString() + extension;
-
-            // Salvar arquivo
-            Path filePath = uploadPath.resolve(filename);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-            // Retornar URL completa do arquivo (incluindo o host do backend)
-            String fileUrl = "http://localhost:8080/uploads/" + filename;
+            // Retornar resposta
             Map<String, String> response = new HashMap<>();
-            response.put("url", fileUrl);
-            response.put("filename", filename);
+            response.put("photo", dataUrl);
+            response.put("photoName", file.getOriginalFilename());
+            response.put("photoType", contentType);
+            response.put("size", String.valueOf(file.getSize()));
 
-            log.info("Arquivo salvo com sucesso: {} - URL: {}", filename, fileUrl);
+            log.info("Imagem convertida para Base64 com sucesso: {} - Tamanho: {} bytes", 
+                     file.getOriginalFilename(), file.getSize());
 
             return ResponseEntity.ok(response);
 
-        } catch (IOException e) {
-            log.error("Erro ao salvar arquivo", e);
+        } catch (Exception e) {
+            log.error("Erro ao processar arquivo", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("message", "Erro ao salvar arquivo: " + e.getMessage()));
-        }
-    }
-
-    @Operation(
-        summary = "Deletar imagem",
-        description = "Remove uma imagem do servidor"
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Imagem deletada com sucesso"),
-        @ApiResponse(responseCode = "404", description = "Imagem não encontrada"),
-        @ApiResponse(responseCode = "401", description = "Não autenticado")
-    })
-    @SecurityRequirement(name = "Bearer Authentication")
-    @DeleteMapping("/image/{filename}")
-    public ResponseEntity<?> deleteImage(@PathVariable String filename) {
-        try {
-            Path filePath = Paths.get(uploadDir).resolve(filename);
-            if (Files.exists(filePath)) {
-                Files.delete(filePath);
-                log.info("Arquivo deletado: {}", filename);
-                return ResponseEntity.ok(Map.of("message", "Imagem deletada com sucesso"));
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("message", "Imagem não encontrada"));
-            }
-        } catch (IOException e) {
-            log.error("Erro ao deletar arquivo", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("message", "Erro ao deletar arquivo"));
+                .body(Map.of("message", "Erro ao processar arquivo: " + e.getMessage()));
         }
     }
 }
