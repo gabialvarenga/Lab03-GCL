@@ -19,12 +19,12 @@ const StudentStatement: React.FC = () => {
     if (!userId) return;
     
     try {
-      const [transactionsData, balanceData] = await Promise.all([
+      const [transactionsData, profileData] = await Promise.all([
         studentService.getTransactions(userId),
-        studentService.getBalance(userId)
+        studentService.getProfile(userId)
       ]);
       setTransactions(transactionsData);
-      setBalance(balanceData);
+      setBalance(profileData.coinBalance || 0);
     } catch (error) {
       console.error('Erro ao carregar extrato:', error);
     } finally {
@@ -97,8 +97,14 @@ const StudentStatement: React.FC = () => {
                           {transaction.type === 'CREDIT' && 'Crédito'}
                         </span>
                       </div>
-                      <p className="text-gray-600 mb-2">{transaction.description}</p>
-                      <p className="text-sm text-gray-500">{formatDate(transaction.date)}</p>
+                      <p className="text-gray-600 mb-1">{transaction.reason}</p>
+                      {transaction.senderName && (
+                        <p className="text-sm text-gray-500">De: {transaction.senderName}</p>
+                      )}
+                      {transaction.receiverName && (
+                        <p className="text-sm text-gray-500">Para: {transaction.receiverName}</p>
+                      )}
+                      <p className="text-sm text-gray-500 mt-1">{formatDate(transaction.date)}</p>
                     </div>
                     <div className={`text-2xl font-bold ml-4 ${transaction.type === 'PURCHASE' ? 'text-red-600' : 'text-green-600'}`}>
                       {transaction.type === 'PURCHASE' ? '-' : '+'}

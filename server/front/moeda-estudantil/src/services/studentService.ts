@@ -21,11 +21,6 @@ export const studentService = {
     return response.data;
   },
 
-  getBalance: async (id: number): Promise<number> => {
-    const response = await api.get<{ balance: number }>(`/students/${id}/balance`);
-    return response.data.balance;
-  },
-
   getAdvantages: async (): Promise<Advantage[]> => {
     const response = await api.get<Advantage[]>('/advantages');
     return response.data;

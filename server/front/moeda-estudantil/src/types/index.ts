@@ -119,13 +119,13 @@ export interface AdvantageRequestDTO {
 export interface Transaction {
   id: number;
   amount: number;
-  description: string;
-  type: TransactionType;
   date: string;
-  sender?: User;
-  receiver?: User;
-  advantage?: Advantage;
+  type: TransactionType;
   reason: string;
+  senderId?: number;
+  senderName?: string;
+  receiverId?: number;
+  receiverName?: string;
 }
 
 export interface TransferCoinsDTO {

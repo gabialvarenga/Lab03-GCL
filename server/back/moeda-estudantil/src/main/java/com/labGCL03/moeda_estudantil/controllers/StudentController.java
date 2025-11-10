@@ -5,11 +5,14 @@ import com.labGCL03.moeda_estudantil.dto.PurchaseResponseDTO;
 import com.labGCL03.moeda_estudantil.dto.StudentRequestDTO;
 import com.labGCL03.moeda_estudantil.dto.StudentResponseDTO;
 import com.labGCL03.moeda_estudantil.dto.StudentUpdateDTO;
+import com.labGCL03.moeda_estudantil.dto.TransactionResponseDTO;
 import com.labGCL03.moeda_estudantil.entities.Coupon;
 import com.labGCL03.moeda_estudantil.entities.Student;
+import com.labGCL03.moeda_estudantil.entities.Transaction;
 import com.labGCL03.moeda_estudantil.exception.ErrorResponse;
 import com.labGCL03.moeda_estudantil.services.CouponService;
 import com.labGCL03.moeda_estudantil.services.StudentService;
+import com.labGCL03.moeda_estudantil.services.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -37,6 +40,7 @@ public class StudentController {
 
     private final StudentService studentService;
     private final CouponService couponService;
+    private final TransactionService transactionService;
 
     @Operation(
             summary = "Listar todos os alunos",
@@ -192,6 +196,27 @@ public class StudentController {
         Coupon coupon = couponService.redeemAdvantage(dto.getStudentId(), dto.getAdvantageId());
         PurchaseResponseDTO response = new PurchaseResponseDTO(coupon);
         
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Buscar transações do aluno",
+            description = "Retorna o histórico de transações de um aluno (moedas recebidas e gastas). Requer autenticação."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de transações retornada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "404", description = "Aluno não encontrado",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @SecurityRequirement(name = "Bearer Authentication")
+    @GetMapping("/{id}/transactions")
+    public ResponseEntity<List<TransactionResponseDTO>> getStudentTransactions(
+            @Parameter(description = "ID do aluno", required = true) @PathVariable Long id) {
+        List<Transaction> transactions = transactionService.getUserTransactionHistory(id);
+        List<TransactionResponseDTO> response = transactions.stream()
+            .map(TransactionResponseDTO::new)
+            .toList();
         return ResponseEntity.ok(response);
     }
 

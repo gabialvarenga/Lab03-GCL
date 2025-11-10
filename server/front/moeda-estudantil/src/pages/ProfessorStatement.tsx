@@ -96,8 +96,14 @@ const ProfessorStatement: React.FC = () => {
                           {transaction.type === 'CREDIT' && 'Crédito Semestral'}
                         </span>
                       </div>
-                      <p className="text-gray-600 mb-2">{transaction.description}</p>
-                      <p className="text-sm text-gray-500">{formatDate(transaction.date)}</p>
+                      <p className="text-gray-600 mb-1">{transaction.reason}</p>
+                      {transaction.senderName && (
+                        <p className="text-sm text-gray-500">De: {transaction.senderName}</p>
+                      )}
+                      {transaction.receiverName && (
+                        <p className="text-sm text-gray-500">Para: {transaction.receiverName}</p>
+                      )}
+                      <p className="text-sm text-gray-500 mt-1">{formatDate(transaction.date)}</p>
                     </div>
                     <div className={`text-2xl font-bold ml-4 ${transaction.type === 'TRANSFER' ? 'text-red-600' : 'text-green-600'}`}>
                       {transaction.type === 'TRANSFER' ? '-' : '+'}
