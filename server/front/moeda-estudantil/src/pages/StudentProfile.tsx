@@ -9,9 +9,11 @@ const StudentProfile: React.FC = () => {
   const [student, setStudent] = useState<Student | null>(null);
   const [institutions, setInstitutions] = useState<Institution[]>([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const { userId } = useAuth();
+  const [deleting, setDeleting] = useState(false);
+  const { userId, logout } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<StudentUpdateDTO>({
@@ -97,6 +99,23 @@ const StudentProfile: React.FC = () => {
     setIsEditing(false);
   };
 
+  const handleDelete = async () => {
+    if (!userId) return;
+
+    setDeleting(true);
+    try {
+      await studentService.deleteProfile(userId);
+      alert('Perfil excluído com sucesso!');
+      logout();
+      navigate('/login');
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Erro ao excluir perfil. Tente novamente.');
+    } finally {
+      setDeleting(false);
+      setShowDeleteModal(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -121,12 +140,20 @@ const StudentProfile: React.FC = () => {
             <>
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">Informações Pessoais</h2>
-                <button 
-                  onClick={() => setIsEditing(true)}
-                  className="btn-primary"
-                >
-                  Editar Perfil
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="btn-primary"
+                  >
+                    Editar Perfil
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteModal(true)}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                  >
+                    Excluir Perfil
+                  </button>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -174,6 +201,8 @@ const StudentProfile: React.FC = () => {
                   </span>
                 </div>
               </div>
+
+             
             </>
           ) : (
             <form onSubmit={handleSubmit}>
@@ -299,6 +328,35 @@ const StudentProfile: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">⚠️ Confirmar Exclusão</h3>
+            <p className="text-gray-700 mb-6">
+              Tem certeza que deseja excluir sua conta? Esta ação é <strong>permanente</strong> e não pode ser desfeita. 
+              Todos os seus dados serão perdidos.
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                disabled={deleting}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDelete}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                disabled={deleting}
+              >
+                {deleting ? 'Excluindo...' : 'Confirmar Exclusão'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

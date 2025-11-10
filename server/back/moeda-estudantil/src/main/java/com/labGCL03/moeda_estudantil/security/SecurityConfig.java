@@ -54,7 +54,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/students/**").hasAnyRole("STUDENT", "TEACHER", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/students/**").hasAnyRole("STUDENT", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/students/**").hasAnyRole("STUDENT", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/students/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/students/**").hasAnyRole("STUDENT", "ADMIN") // STUDENT pode deletar próprio perfil
                         
                         // Professores
                         .requestMatchers(HttpMethod.GET, "/api/teachers/**").hasAnyRole("TEACHER", "STUDENT", "ADMIN")
@@ -66,7 +66,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/companies/**").hasAnyRole("STUDENT", "COMPANY", "TEACHER", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/companies/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/companies/**").hasAnyRole("COMPANY", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/companies/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/companies/**").hasAnyRole("COMPANY", "ADMIN") // COMPANY pode deletar próprio perfil
                         
                         // Vantagens - STUDENT pode apenas consultar (GET), COMPANY e ADMIN podem gerenciar
                         .requestMatchers(HttpMethod.GET, "/api/advantages/**").hasAnyRole("STUDENT", "COMPANY", "TEACHER", "ADMIN")

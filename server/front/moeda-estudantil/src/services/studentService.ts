@@ -12,6 +12,10 @@ export const studentService = {
     return response.data;
   },
 
+  deleteProfile: async (id: number): Promise<void> => {
+    await api.delete(`/students/${id}`);
+  },
+
   getTransactions: async (id: number): Promise<Transaction[]> => {
     const response = await api.get<Transaction[]>(`/students/${id}/transactions`);
     return response.data;

@@ -43,7 +43,7 @@ public class InstitutionController {
             description = "Não autenticado"
         )
     })
-    @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "Bearer Authentication")
+    @io.swagger.v3.oas.annotations.security.SecurityRequirements
     public ResponseEntity<List<InstitutionDTO>> getAllInstitutions() {
         List<InstitutionDTO> institutions = institutionService.findAll();
         return ResponseEntity.ok(institutions);

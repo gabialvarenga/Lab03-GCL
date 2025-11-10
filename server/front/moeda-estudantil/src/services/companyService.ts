@@ -12,6 +12,10 @@ export const companyService = {
     return response.data;
   },
 
+  deleteProfile: async (id: number): Promise<void> => {
+    await api.delete(`/companies/${id}`);
+  },
+
   getAdvantages: async (companyId: number): Promise<Advantage[]> => {
     const response = await api.get<Advantage[]>(`/advantages/company/${companyId}`);
     return response.data;
