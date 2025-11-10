@@ -45,6 +45,10 @@ public class AdvantageResponseDTO {
     private LocalDateTime updatedAt;
 
     public AdvantageResponseDTO(Advantage advantage) {
+        this(advantage, false);
+    }
+    
+    public AdvantageResponseDTO(Advantage advantage, boolean includeTimesRedeemed) {
         this.id = advantage.getId();
         this.name = advantage.getName();
         this.description = advantage.getDescription();
@@ -52,7 +56,8 @@ public class AdvantageResponseDTO {
         this.photo = advantage.getPhoto();
         this.companyId = advantage.getCompany() != null ? advantage.getCompany().getId() : null;
         this.companyName = advantage.getCompany() != null ? advantage.getCompany().getName() : null;
-        this.timesRedeemed = advantage.getTimesRedeemed();
+        // Evitar acesso a coleções lazy durante compra - definir como null ou 0 por padrão
+        this.timesRedeemed = includeTimesRedeemed ? advantage.getTimesRedeemed() : 0;
         this.createdAt = advantage.getCreatedAt();
         this.updatedAt = advantage.getUpdatedAt();
     }

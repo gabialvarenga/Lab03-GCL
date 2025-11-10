@@ -88,10 +88,13 @@ public class GlobalExceptionHandler {
             Exception ex, 
             HttpServletRequest request) {
         
+        // Log completo da exceção para debugging
+        ex.printStackTrace();
+        
         ErrorResponse error = new ErrorResponse(
             HttpStatus.INTERNAL_SERVER_ERROR.value(),
             "Internal Server Error",
-            "Ocorreu um erro interno no servidor",
+            "Ocorreu um erro interno no servidor: " + ex.getMessage(),
             request.getRequestURI()
         );
         

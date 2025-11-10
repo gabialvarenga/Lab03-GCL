@@ -34,4 +34,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     
     @Query("SELECT AVG(s.coinBalance) FROM Student s WHERE s.institution.id = :institutionId")
     Double getAverageCoinsInInstitution(@Param("institutionId") Long institutionId);
+    
+    @Query("SELECT s FROM Student s LEFT JOIN FETCH s.institution WHERE s.id = :id")
+    Optional<Student> findByIdWithInstitution(@Param("id") Long id);
 }

@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AdvantageRepository extends JpaRepository<Advantage, Long> {
@@ -30,4 +31,7 @@ public interface AdvantageRepository extends JpaRepository<Advantage, Long> {
     
     @Query("SELECT AVG(a.costInCoins) FROM Advantage a")
     Double getAverageCostOfAdvantages();
+    
+    @Query("SELECT a FROM Advantage a LEFT JOIN FETCH a.company WHERE a.id = :id")
+    Optional<Advantage> findByIdWithCompany(@Param("id") Long id);
 }

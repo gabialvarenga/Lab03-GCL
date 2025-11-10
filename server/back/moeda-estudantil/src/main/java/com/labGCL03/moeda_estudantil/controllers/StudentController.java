@@ -1,10 +1,14 @@
 package com.labGCL03.moeda_estudantil.controllers;
 
+import com.labGCL03.moeda_estudantil.dto.PurchaseRequestDTO;
+import com.labGCL03.moeda_estudantil.dto.PurchaseResponseDTO;
 import com.labGCL03.moeda_estudantil.dto.StudentRequestDTO;
 import com.labGCL03.moeda_estudantil.dto.StudentResponseDTO;
 import com.labGCL03.moeda_estudantil.dto.StudentUpdateDTO;
+import com.labGCL03.moeda_estudantil.entities.Coupon;
 import com.labGCL03.moeda_estudantil.entities.Student;
 import com.labGCL03.moeda_estudantil.exception.ErrorResponse;
+import com.labGCL03.moeda_estudantil.services.CouponService;
 import com.labGCL03.moeda_estudantil.services.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,6 +36,7 @@ import java.util.stream.Collectors;
 public class StudentController {
 
     private final StudentService studentService;
+    private final CouponService couponService;
 
     @Operation(
             summary = "Listar todos os alunos",
@@ -163,6 +168,31 @@ public class StudentController {
             @PathVariable Long id) {
         studentService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "Resgatar vantagem",
+            description = "Permite que um aluno resgate uma vantagem utilizando suas moedas. Gera um cupom com código único. Requer role STUDENT."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Vantagem resgatada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Saldo insuficiente ou dados inválidos",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Sem permissão (requer STUDENT)"),
+            @ApiResponse(responseCode = "404", description = "Aluno ou vantagem não encontrados",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PostMapping("/purchase")
+    public ResponseEntity<PurchaseResponseDTO> purchaseAdvantage(
+            @Parameter(description = "Dados da compra (IDs do aluno e da vantagem)", required = true)
+            @Valid @RequestBody PurchaseRequestDTO dto) {
+        
+        Coupon coupon = couponService.redeemAdvantage(dto.getStudentId(), dto.getAdvantageId());
+        PurchaseResponseDTO response = new PurchaseResponseDTO(coupon);
+        
+        return ResponseEntity.ok(response);
     }
 
 }

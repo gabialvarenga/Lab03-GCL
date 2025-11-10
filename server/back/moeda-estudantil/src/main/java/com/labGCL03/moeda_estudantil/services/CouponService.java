@@ -1,6 +1,7 @@
 package com.labGCL03.moeda_estudantil.services;
 
 import com.labGCL03.moeda_estudantil.entities.Advantage;
+import com.labGCL03.moeda_estudantil.entities.Company;
 import com.labGCL03.moeda_estudantil.entities.Coupon;
 import com.labGCL03.moeda_estudantil.entities.Student;
 import com.labGCL03.moeda_estudantil.repositories.AdvantageRepository;
@@ -24,11 +25,11 @@ public class CouponService {
     private final EmailService emailService;
 
     public Coupon redeemAdvantage(Long studentId, Long advantageId) {
-        // Buscar aluno e vantagem
-        Student student = studentRepository.findById(studentId)
+        // Buscar aluno e vantagem com relações eager-loaded
+        Student student = studentRepository.findByIdWithInstitution(studentId)
             .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
         
-        Advantage advantage = advantageRepository.findById(advantageId)
+        Advantage advantage = advantageRepository.findByIdWithCompany(advantageId)
             .orElseThrow(() -> new RuntimeException("Vantagem não encontrada"));
 
         // Validações
@@ -39,16 +40,27 @@ public class CouponService {
         // Usar o método da entidade Student para resgatar vantagem
         Coupon coupon = student.redeemAdvantage(advantage);
         
+        // Garantir que as relações do coupon estejam definidas antes de salvar
+        coupon.setStudent(student);
+        coupon.setAdvantage(advantage);
+        
         // Persistir as alterações
         studentRepository.save(student);
         Coupon savedCoupon = couponRepository.save(coupon);
+        
+        // Importante: manter as referências carregadas no coupon retornado
+        savedCoupon.setStudent(student);
+        savedCoupon.setAdvantage(advantage);
 
         // Criar transação de resgate
         transactionService.createRedemptionTransaction(student, advantage.getCostInCoins(), advantage.getName());
 
         // Enviar emails
         emailService.sendCouponToStudent(student, savedCoupon);
-        emailService.notifyCompanyRedemption(advantage.getCompany(), savedCoupon);
+        Company company = advantage.getCompany();
+        if (company != null) {
+            emailService.notifyCompanyRedemption(company, savedCoupon);
+        }
 
         return savedCoupon;
     }
