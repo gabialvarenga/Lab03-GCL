@@ -94,13 +94,13 @@ public class FileUploadController {
             Path filePath = uploadPath.resolve(filename);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            // Retornar URL do arquivo
-            String fileUrl = "/uploads/" + filename;
+            // Retornar URL completa do arquivo (incluindo o host do backend)
+            String fileUrl = "http://localhost:8080/uploads/" + filename;
             Map<String, String> response = new HashMap<>();
             response.put("url", fileUrl);
             response.put("filename", filename);
 
-            log.info("Arquivo salvo com sucesso: {}", filename);
+            log.info("Arquivo salvo com sucesso: {} - URL: {}", filename, fileUrl);
 
             return ResponseEntity.ok(response);
 
