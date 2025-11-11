@@ -81,38 +81,46 @@ const StudentStatement: React.FC = () => {
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
-              {transactions.map((transaction) => (
-                <div key={transaction.id} className="p-6 hover:bg-gray-50 transition-colors">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-2xl">
-                          {transaction.type === 'TRANSFER' && '💰'}
-                          {transaction.type === 'PURCHASE' && '🎁'}
-                          {transaction.type === 'CREDIT' && '💳'}
-                        </span>
-                        <span className="font-semibold text-gray-900">
-                          {transaction.type === 'TRANSFER' && 'Recebimento de Moedas'}
-                          {transaction.type === 'PURCHASE' && 'Compra de Vantagem'}
-                          {transaction.type === 'CREDIT' && 'Crédito'}
-                        </span>
+              {transactions.map((transaction) => {
+                // Determina se é recebimento ou gasto para o aluno
+                const isIncoming = transaction.type === 'RECEIVED' || transaction.receiverId === userId;
+                const isOutgoing = transaction.type === 'SENT' || transaction.type === 'REDEEMED';
+                
+                return (
+                  <div key={transaction.id} className="p-6 hover:bg-gray-50 transition-colors">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-2xl">
+                            {transaction.type === 'RECEIVED' && '💰'}
+                            {transaction.type === 'REDEEMED' && '🎁'}
+                            {transaction.type === 'SENT' && '�'}
+                          </span>
+                          <span className="font-semibold text-gray-900">
+                            {transaction.type === 'RECEIVED' && 'Moedas Recebidas'}
+                            {transaction.type === 'REDEEMED' && 'Resgate de Vantagem'}
+                            {transaction.type === 'SENT' && 'Transferência Enviada'}
+                          </span>
+                        </div>
+                        <p className="text-gray-600 mb-1">{transaction.reason}</p>
+                        {transaction.senderName && isIncoming && (
+                          <p className="text-sm text-gray-500">
+                            👨‍🏫 Enviado por: <span className="font-medium">{transaction.senderName}</span>
+                          </p>
+                        )}
+                        {transaction.receiverName && isOutgoing && (
+                          <p className="text-sm text-gray-500">Para: {transaction.receiverName}</p>
+                        )}
+                        <p className="text-sm text-gray-500 mt-1">{formatDate(transaction.date)}</p>
                       </div>
-                      <p className="text-gray-600 mb-1">{transaction.reason}</p>
-                      {transaction.senderName && (
-                        <p className="text-sm text-gray-500">De: {transaction.senderName}</p>
-                      )}
-                      {transaction.receiverName && (
-                        <p className="text-sm text-gray-500">Para: {transaction.receiverName}</p>
-                      )}
-                      <p className="text-sm text-gray-500 mt-1">{formatDate(transaction.date)}</p>
-                    </div>
-                    <div className={`text-2xl font-bold ml-4 ${transaction.type === 'PURCHASE' ? 'text-red-600' : 'text-green-600'}`}>
-                      {transaction.type === 'PURCHASE' ? '-' : '+'}
-                      {transaction.amount}
+                      <div className={`text-2xl font-bold ml-4 ${isOutgoing ? 'text-green-600' : 'text-red-600'}`}>
+                        {isOutgoing ? '+' : '-'}
+                        {transaction.amount}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
