@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -20,12 +21,16 @@ public class InstitutionDTO {
     @Schema(description = "Nome da instituição", example = "Universidade Federal de Minas Gerais")
     private String name;
 
+    @Schema(description = "Lista de cursos disponíveis na instituição")
+    private List<String> availableCourses;
+
     @Schema(description = "Data de cadastro da instituição")
     private LocalDateTime createdAt;
 
     public InstitutionDTO(Institution institution) {
         this.id = institution.getId();
         this.name = institution.getName();
+        this.availableCourses = institution.getAvailableCourses();
         this.createdAt = institution.getCreatedAt();
     }
 }

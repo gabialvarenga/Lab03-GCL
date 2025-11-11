@@ -85,7 +85,9 @@ export interface CompanyUpdateDTO {
 export interface Institution {
   id: number;
   name: string;
+  availableCourses?: string[];
   address?: string;
+  createdAt?: string;
 }
 
 // Advantage Types
@@ -94,6 +96,7 @@ export interface Advantage {
   name: string;
   description: string;
   costInCoins: number;
+  availableQuantity?: number; // null ou undefined = ilimitado
   photo?: string;
   photoName?: string;
   photoType?: string;
@@ -109,6 +112,7 @@ export interface AdvantageRequestDTO {
   name: string;
   description: string;
   costInCoins: number;
+  availableQuantity?: number;
   photo?: string;
   photoName?: string;
   photoType?: string;

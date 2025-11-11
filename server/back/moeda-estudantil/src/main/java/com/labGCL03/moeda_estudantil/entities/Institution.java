@@ -25,6 +25,11 @@ public class Institution {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "institution_courses", joinColumns = @JoinColumn(name = "institution_id"))
+    @Column(name = "course_name")
+    private List<String> availableCourses;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

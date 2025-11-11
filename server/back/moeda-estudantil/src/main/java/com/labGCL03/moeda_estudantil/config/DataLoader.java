@@ -69,28 +69,102 @@ public class DataLoader implements CommandLineRunner {
         if (count == 0) {
             log.info("Nenhuma instituição encontrada. Iniciando carga de dados...");
             
-            List<String> institutionNames = Arrays.asList(
-                "Pontifícia Universidade Católica de Minas Gerais (PUC Minas)",
-                "Universidade Federal de Minas Gerais (UFMG)",
+            // PUC Minas
+            Institution pucMinas = new Institution();
+            pucMinas.setName("Pontifícia Universidade Católica de Minas Gerais (PUC Minas)");
+            pucMinas.setAvailableCourses(Arrays.asList(
+                "Engenharia de Software",
+                "Ciência da Computação",
+                "Sistemas de Informação",
+                "Engenharia Civil",
+                "Engenharia Elétrica",
+                "Engenharia Mecânica",
+                "Administração",
+                "Direito",
+                "Medicina",
+                "Psicologia"
+            ));
+            pucMinas.setCreatedAt(LocalDateTime.now());
+            institutionRepository.save(pucMinas);
+            
+            // UFMG
+            Institution ufmg = new Institution();
+            ufmg.setName("Universidade Federal de Minas Gerais (UFMG)");
+            ufmg.setAvailableCourses(Arrays.asList(
+                "Ciência da Computação",
+                "Engenharia de Produção",
+                "Engenharia Química",
+                "Medicina",
+                "Odontologia",
+                "Farmácia",
+                "Economia",
+                "Arquitetura e Urbanismo"
+            ));
+            ufmg.setCreatedAt(LocalDateTime.now());
+            institutionRepository.save(ufmg);
+            
+            // USP
+            Institution usp = new Institution();
+            usp.setName("Universidade de São Paulo (USP)");
+            usp.setAvailableCourses(Arrays.asList(
+                "Engenharia de Computação",
+                "Ciência da Computação",
+                "Matemática",
+                "Física",
+                "Química",
+                "Medicina",
+                "Direito",
+                "Administração",
+                "Economia"
+            ));
+            usp.setCreatedAt(LocalDateTime.now());
+            institutionRepository.save(usp);
+            
+            // UNICAMP
+            Institution unicamp = new Institution();
+            unicamp.setName("Universidade Estadual de Campinas (UNICAMP)");
+            unicamp.setAvailableCourses(Arrays.asList(
+                "Engenharia da Computação",
+                "Ciência da Computação",
+                "Engenharia Elétrica",
+                "Engenharia Civil",
+                "Física",
+                "Matemática",
+                "Medicina"
+            ));
+            unicamp.setCreatedAt(LocalDateTime.now());
+            institutionRepository.save(unicamp);
+            
+            // Outras instituições com cursos genéricos
+            List<String> defaultCourses = Arrays.asList(
+                "Administração",
+                "Ciência da Computação",
+                "Direito",
+                "Engenharia Civil",
+                "Engenharia de Software",
+                "Medicina",
+                "Psicologia"
+            );
+            
+            String[] otherInstitutions = {
                 "Universidade Federal de São Paulo (UNIFESP)",
-                "Universidade de São Paulo (USP)",
-                "Universidade Estadual de Campinas (UNICAMP)",
                 "Universidade Federal do Rio de Janeiro (UFRJ)",
                 "Universidade de Brasília (UnB)",
                 "Universidade Federal do Rio Grande do Sul (UFRGS)",
                 "Universidade Federal de Santa Catarina (UFSC)",
                 "Universidade Federal do Paraná (UFPR)"
-            );
+            };
             
-            for (String name : institutionNames) {
+            for (String name : otherInstitutions) {
                 Institution institution = new Institution();
                 institution.setName(name);
+                institution.setAvailableCourses(defaultCourses);
                 institution.setCreatedAt(LocalDateTime.now());
                 institutionRepository.save(institution);
                 log.info("Instituição cadastrada: {}", name);
             }
             
-            log.info("Carga de instituições concluída! {} instituições cadastradas.", institutionNames.size());
+            log.info("Carga de instituições concluída! {} instituições cadastradas.", institutionRepository.count());
         } else {
             log.info("Instituições já cadastradas no sistema. Total: {}", count);
         }
@@ -151,7 +225,15 @@ public class DataLoader implements CommandLineRunner {
             t1.setCurrentBalance(1000); 
             teacherRepository.save(t1);
             log.info("✓ Professor criado: {} (1000 moedas) - Login: professor.joao@test.com / Senha: 123456", t1.getName());
+            // Atribuir uma Institution (não uma String). Exemplo: buscar por nome ou usar a default.
+            Institution assignedInstitution = institutions.stream()
+                .filter(inst -> "Pontifícia Universidade Católica de Minas Gerais (PUC Minas)".equals(inst.getName()))
+                .findFirst()
+                .orElse(defaultInstitution);
 
+            t1.setInstitution(assignedInstitution);
+            // salvar novamente para garantir que a alteração seja persistida
+            teacherRepository.save(t1);
             // Professor 2: Com saldo médio
             Teacher t2 = new Teacher();
             t2.setName("Maria Santos");

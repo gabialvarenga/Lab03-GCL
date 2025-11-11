@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { institutionService } from '../services/institutionService';
+import { validateCPF, formatCPF, validateCNPJ, formatCNPJ, validateRG, formatRG } from '../utils/validators';
 import type { Institution } from '../types';
 
 type UserType = 'student' | 'company';
@@ -9,8 +10,12 @@ type UserType = 'student' | 'company';
 const Register: React.FC = () => {
   const [userType, setUserType] = useState<UserType>('student');
   const [institutions, setInstitutions] = useState<Institution[]>([]);
+  const [selectedInstitution, setSelectedInstitution] = useState<Institution | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [cpfError, setCpfError] = useState('');
+  const [rgError, setRgError] = useState('');
+  const [cnpjError, setCnpjError] = useState('');
   const navigate = useNavigate();
 
   // Student form data
@@ -56,18 +61,70 @@ const Register: React.FC = () => {
 
   const handleStudentChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setStudentData((prev) => ({
-      ...prev,
-      [name]: name === 'institutionId' ? parseInt(value) : value,
-    }));
+    
+    if (name === 'institutionId') {
+      const instId = parseInt(value);
+      const institution = institutions.find(i => i.id === instId) || null;
+      setSelectedInstitution(institution);
+      setStudentData((prev) => ({
+        ...prev,
+        institutionId: instId,
+        course: '' // Limpa o curso ao trocar de instituição
+      }));
+    } else if (name === 'cpf') {
+      const formatted = formatCPF(value);
+      setStudentData((prev) => ({ ...prev, cpf: formatted }));
+      
+      // Valida apenas se tiver 14 caracteres (formato completo)
+      if (formatted.length === 14) {
+        if (!validateCPF(formatted)) {
+          setCpfError('CPF inválido');
+        } else {
+          setCpfError('');
+        }
+      } else {
+        setCpfError('');
+      }
+    } else if (name === 'rg') {
+      const formatted = formatRG(value);
+      setStudentData((prev) => ({ ...prev, rg: formatted }));
+      
+      if (!validateRG(formatted) && formatted.length > 0) {
+        setRgError('RG deve ter entre 7 e 14 caracteres');
+      } else {
+        setRgError('');
+      }
+    } else {
+      setStudentData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleCompanyChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setCompanyData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    
+    if (name === 'cnpj') {
+      const formatted = formatCNPJ(value);
+      setCompanyData((prev) => ({ ...prev, cnpj: formatted }));
+      
+      // Valida apenas se tiver 18 caracteres (formato completo)
+      if (formatted.length === 18) {
+        if (!validateCNPJ(formatted)) {
+          setCnpjError('CNPJ inválido');
+        } else {
+          setCnpjError('');
+        }
+      } else {
+        setCnpjError('');
+      }
+    } else {
+      setCompanyData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -75,15 +132,33 @@ const Register: React.FC = () => {
     setError('');
 
     if (userType === 'student') {
+      // Validações
       if (studentData.institutionId === 0) {
         setError('Selecione uma instituição');
+        return;
+      }
+
+      if (!validateCPF(studentData.cpf)) {
+        setError('CPF inválido');
+        setCpfError('CPF inválido');
+        return;
+      }
+
+      if (!validateRG(studentData.rg)) {
+        setError('RG inválido - deve ter entre 7 e 14 caracteres');
+        setRgError('RG deve ter entre 7 e 14 caracteres');
         return;
       }
 
       setLoading(true);
       try {
         const { confirmPassword, ...registrationData } = studentData;
-        await authService.registerStudent(registrationData);
+        // Remove formatação do CPF antes de enviar
+        const dataToSend = {
+          ...registrationData,
+          cpf: registrationData.cpf.replace(/\D/g, '')
+        };
+        await authService.registerStudent(dataToSend);
         alert('Cadastro realizado com sucesso! Faça login para continuar.');
         navigate('/login');
       } catch (err: any) {
@@ -92,11 +167,22 @@ const Register: React.FC = () => {
         setLoading(false);
       }
     } else {
+      // Validação CNPJ
+      if (!validateCNPJ(companyData.cnpj)) {
+        setError('CNPJ inválido');
+        setCnpjError('CNPJ inválido');
+        return;
+      }
 
       setLoading(true);
       try {
         const { confirmPassword, ...registrationData } = companyData;
-        await authService.registerCompany(registrationData);
+        // Remove formatação do CNPJ antes de enviar
+        const dataToSend = {
+          ...registrationData,
+          cnpj: registrationData.cnpj.replace(/\D/g, '')
+        };
+        await authService.registerCompany(dataToSend);
         alert('Cadastro realizado com sucesso! Faça login para continuar.');
         navigate('/login');
       } catch (err: any) {
@@ -207,8 +293,12 @@ const Register: React.FC = () => {
                     onChange={handleStudentChange}
                     required
                     placeholder="000.000.000-00"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    maxLength={14}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                      cpfError ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   />
+                  {cpfError && <small className="text-red-500 text-xs mt-1 block">{cpfError}</small>}
                 </div>
 
                 <div>
@@ -223,8 +313,12 @@ const Register: React.FC = () => {
                     onChange={handleStudentChange}
                     required
                     placeholder="00.000.000-0"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    maxLength={15}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                      rgError ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   />
+                  {rgError && <small className="text-red-500 text-xs mt-1 block">{rgError}</small>}
                 </div>
               </div>
 
@@ -245,22 +339,6 @@ const Register: React.FC = () => {
               </div>
 
               <div className="mb-4">
-                <label htmlFor="course" className="block text-sm font-medium text-gray-700 mb-2">
-                  Curso *
-                </label>
-                <input
-                  type="text"
-                  id="course"
-                  name="course"
-                  value={studentData.course}
-                  onChange={handleStudentChange}
-                  required
-                  placeholder="Ex: Ciência da Computação"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                />
-              </div>
-
-              <div className="mb-6">
                 <label htmlFor="institutionId" className="block text-sm font-medium text-gray-700 mb-2">
                   Instituição de Ensino *
                 </label>
@@ -286,6 +364,49 @@ const Register: React.FC = () => {
                 {institutions.length === 0 && (
                   <small className="text-orange-500 text-sm mt-1 block">⚠️ Nenhuma instituição carregada. Verifique o console (F12).</small>
                 )}
+              </div>
+
+              <div className="mb-6">
+                <label htmlFor="course" className="block text-sm font-medium text-gray-700 mb-2">
+                  Curso *
+                </label>
+                {!selectedInstitution || studentData.institutionId === 0 ? (
+                  <div className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-500">
+                    Selecione uma instituição primeiro
+                  </div>
+                ) : selectedInstitution.availableCourses && selectedInstitution.availableCourses.length > 0 ? (
+                  <select
+                    id="course"
+                    name="course"
+                    value={studentData.course}
+                    onChange={handleStudentChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  >
+                    <option value="">Selecione seu curso</option>
+                    {selectedInstitution.availableCourses.map((course, index) => (
+                      <option key={index} value={course}>
+                        {course}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    id="course"
+                    name="course"
+                    value={studentData.course}
+                    onChange={handleStudentChange}
+                    required
+                    placeholder="Ex: Ciência da Computação"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  />
+                )}
+                <small className="text-gray-500 text-xs mt-1 block">
+                  {selectedInstitution && selectedInstitution.availableCourses && selectedInstitution.availableCourses.length > 0
+                    ? 'Selecione um curso da lista'
+                    : 'Digite o nome do seu curso'}
+                </small>
               </div>
             </>
           ) : (
@@ -351,11 +472,14 @@ const Register: React.FC = () => {
                   value={companyData.cnpj}
                   onChange={handleCompanyChange}
                   required
-                  placeholder="00000000000000 (apenas números)"
-                  maxLength={14}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="00.000.000/0000-00"
+                  maxLength={18}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                    cnpjError ? 'border-red-500' : 'border-gray-300'
+                  }`}
                 />
-                <small className="text-gray-600 text-sm mt-1 block">Digite apenas os 14 números do CNPJ (sem pontos, traços ou barras)</small>
+                {cnpjError && <small className="text-red-500 text-xs mt-1 block">{cnpjError}</small>}
+                {!cnpjError && <small className="text-gray-600 text-xs mt-1 block">Formato: 00.000.000/0000-00</small>}
               </div>
 
               <div className="mb-6">
