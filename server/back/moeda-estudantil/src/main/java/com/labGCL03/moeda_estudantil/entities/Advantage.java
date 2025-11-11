@@ -33,6 +33,9 @@ public class Advantage {
     @Column(name = "cost_in_coins", nullable = false)
     private Integer costInCoins;
 
+    @Column(name = "available_quantity")
+    private Integer availableQuantity; 
+
     @Lob
     @Column(name = "photo", columnDefinition = "LONGTEXT")
     private String photo; // Armazena imagem em Base64
@@ -99,5 +102,26 @@ public class Advantage {
 
     public List<Coupon> getCoupons() {
         return coupons != null ? coupons : List.of();
+    }
+
+    /**
+     * Verifica se a vantagem está disponível para resgate
+     */
+    public boolean isAvailable() {
+        return availableQuantity == null || availableQuantity > 0;
+    }
+
+    /**
+     * Decrementa a quantidade disponível quando um cupom é gerado
+     * @throws IllegalStateException se não houver quantidade disponível
+     */
+    public void decrementQuantity() {
+        if (availableQuantity != null) {
+            if (availableQuantity <= 0) {
+                throw new IllegalStateException("Não há cupons disponíveis para esta vantagem");
+            }
+            availableQuantity--;
+        }
+        // Se availableQuantity for null, é ilimitado, não faz nada
     }
 }

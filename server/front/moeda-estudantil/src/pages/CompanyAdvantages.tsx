@@ -19,7 +19,8 @@ const CompanyAdvantages: React.FC = () => {
     if (!userId) return;
     
     try {
-      const data = await companyService.getAdvantages(userId);
+      // Passa showQuantity=true para empresas verem a quantidade disponível
+      const data = await companyService.getAdvantages(userId, true);
       setAdvantages(data);
     } catch (error) {
       console.error('Erro ao carregar vantagens:', error);
@@ -76,8 +77,35 @@ const CompanyAdvantages: React.FC = () => {
                   <h3 className="text-xl font-bold text-gray-800 mb-2">{advantage.name}</h3>
                   <p className="text-gray-600 mb-4 line-clamp-3">{advantage.description}</p>
                   <div className="flex justify-between items-center mb-4">
-                    <span className="text-2xl font-bold text-black-600">{advantage.costInCoins} moedas</span>
+                    <span className="text-2xl font-bold text-purple-600">{advantage.costInCoins} moedas</span>
                   </div>
+                  {advantage.availableQuantity !== undefined && advantage.availableQuantity !== null && (
+                    <div className="mb-4">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-600">Disponível:</span>
+                        <span className={`font-semibold ${
+                          advantage.availableQuantity > 10 ? 'text-green-600' : 
+                          advantage.availableQuantity > 0 ? 'text-yellow-600' : 'text-red-600'
+                        }`}>
+                          {advantage.availableQuantity} {advantage.availableQuantity === 1 ? 'cupom' : 'cupons'}
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div 
+                          className={`h-2 rounded-full ${
+                            advantage.availableQuantity > 10 ? 'bg-green-500' : 
+                            advantage.availableQuantity > 0 ? 'bg-yellow-500' : 'bg-red-500'
+                          }`}
+                          style={{ width: `${Math.min((advantage.availableQuantity / 50) * 100, 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
+                  {advantage.availableQuantity === undefined || advantage.availableQuantity === null ? (
+                    <div className="mb-4 text-sm text-gray-500 italic">
+                      ♾️ Quantidade ilimitada
+                    </div>
+                  ) : null}
                   <div className="flex gap-2">
                     <button 
                       onClick={() => navigate(`/company/advantages/edit/${advantage.id}`)} 

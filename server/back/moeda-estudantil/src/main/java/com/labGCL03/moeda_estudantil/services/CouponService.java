@@ -37,6 +37,15 @@ public class CouponService {
             throw new IllegalArgumentException("Saldo insuficiente");
         }
 
+        // Verifica se há cupons disponíveis
+        if (!advantage.isAvailable()) {
+            throw new IllegalArgumentException("Não há mais cupons disponíveis para esta vantagem");
+        }
+
+        // Decrementa a quantidade disponível
+        advantage.decrementQuantity();
+        advantageRepository.save(advantage);
+
         // Usar o método da entidade Student para resgatar vantagem
         Coupon coupon = student.redeemAdvantage(advantage);
         

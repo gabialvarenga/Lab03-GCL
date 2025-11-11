@@ -67,6 +67,7 @@ public class AdvantageService {
         advantage.setName(dto.getName());
         advantage.setDescription(dto.getDescription());
         advantage.setCostInCoins(dto.getCostInCoins());
+        advantage.setAvailableQuantity(dto.getAvailableQuantity());
         advantage.setPhoto(dto.getPhoto());
         advantage.setPhotoName(dto.getPhotoName());
         advantage.setPhotoType(dto.getPhotoType());
@@ -97,6 +98,11 @@ public class AdvantageService {
                 throw new BusinessException("Custo deve ser positivo");
             }
             advantage.setCostInCoins(dto.getCostInCoins());
+        }
+        
+        // Permite atualizar availableQuantity (inclusive para null = ilimitado)
+        if (dto.getAvailableQuantity() != null) {
+            advantage.setAvailableQuantity(dto.getAvailableQuantity());
         }
         
         if (dto.getPhoto() != null) {

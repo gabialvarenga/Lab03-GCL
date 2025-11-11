@@ -11,6 +11,7 @@ const AdvantageForm: React.FC = () => {
     name: '',
     description: '',
     costInCoins: 0,
+    availableQuantity: undefined as number | undefined,
     photo: '',
     photoName: '',
     photoType: '',
@@ -40,6 +41,7 @@ const AdvantageForm: React.FC = () => {
           name: advantage.name,
           description: advantage.description,
           costInCoins: advantage.costInCoins,
+          availableQuantity: advantage.availableQuantity,
           photo: advantage.photo || '',
           photoName: advantage.photoName || '',
           photoType: advantage.photoType || '',
@@ -59,7 +61,9 @@ const AdvantageForm: React.FC = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'costInCoins' ? parseInt(value) || 0 : value,
+      [name]: name === 'costInCoins' || name === 'availableQuantity' 
+        ? (value === '' ? undefined : parseInt(value) || 0)
+        : value,
     }));
   };
 
@@ -125,6 +129,7 @@ const AdvantageForm: React.FC = () => {
         name: formData.name,
         description: formData.description,
         costInCoins: formData.costInCoins,
+        availableQuantity: formData.availableQuantity,
         photo: formData.photo || undefined,
         photoName: formData.photoName || undefined,
         photoType: formData.photoType || undefined,
@@ -201,6 +206,27 @@ const AdvantageForm: React.FC = () => {
               placeholder="Ex: 100"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
+          </div>
+
+          <div className="mb-6">
+            <label htmlFor="availableQuantity" className="block text-gray-700 font-medium mb-2">
+              Quantidade Disponível (opcional)
+            </label>
+            <input
+              type="number"
+              id="availableQuantity"
+              name="availableQuantity"
+              value={formData.availableQuantity || ''}
+              onChange={handleChange}
+              min="0"
+              placeholder="Deixe vazio para quantidade ilimitada"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+            <small className="text-gray-500 text-sm mt-1 block">
+              {formData.availableQuantity 
+                ? `${formData.availableQuantity} cupons disponíveis` 
+                : 'Quantidade ilimitada de cupons'}
+            </small>
           </div>
 
           <div className="mb-6">

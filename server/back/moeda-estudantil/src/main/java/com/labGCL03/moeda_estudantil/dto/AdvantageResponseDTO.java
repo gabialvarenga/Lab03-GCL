@@ -26,6 +26,9 @@ public class AdvantageResponseDTO {
     @Schema(description = "Custo em moedas estudantis", example = "100")
     private Integer costInCoins;
 
+    @Schema(description = "Quantidade disponível de cupons (visível apenas para empresas)", example = "50")
+    private Integer availableQuantity;
+
     @Schema(description = "Imagem da vantagem em Base64", example = "data:image/jpeg;base64,/9j/4AAQSkZJRg...")
     private String photo;
 
@@ -51,14 +54,24 @@ public class AdvantageResponseDTO {
     private LocalDateTime updatedAt;
 
     public AdvantageResponseDTO(Advantage advantage) {
-        this(advantage, false);
+        this(advantage, false, false);
     }
     
     public AdvantageResponseDTO(Advantage advantage, boolean includeTimesRedeemed) {
+        this(advantage, includeTimesRedeemed, false);
+    }
+
+    /**
+     * @param advantage A vantagem
+     * @param includeTimesRedeemed Se deve incluir o número de vezes resgatada
+     * @param showAvailableQuantity Se deve mostrar a quantidade disponível (apenas para empresas)
+     */
+    public AdvantageResponseDTO(Advantage advantage, boolean includeTimesRedeemed, boolean showAvailableQuantity) {
         this.id = advantage.getId();
         this.name = advantage.getName();
         this.description = advantage.getDescription();
         this.costInCoins = advantage.getCostInCoins();
+        this.availableQuantity = showAvailableQuantity ? advantage.getAvailableQuantity() : null;
         this.photo = advantage.getPhoto();
         this.photoName = advantage.getPhotoName();
         this.photoType = advantage.getPhotoType();

@@ -26,6 +26,10 @@ public class AdvantageRequestDTO {
     @Min(value = 1, message = "Custo deve ser no mínimo 1 moeda")
     private Integer costInCoins;
 
+    @Schema(description = "Quantidade disponível de cupons (null ou omitido = ilimitado)", example = "50")
+    @Min(value = 0, message = "Quantidade disponível não pode ser negativa")
+    private Integer availableQuantity;
+
     @Schema(description = "Imagem da vantagem em Base64 (com prefixo data:image/...;base64,)", 
             example = "data:image/jpeg;base64,/9j/4AAQSkZJRg...")
     private String photo;

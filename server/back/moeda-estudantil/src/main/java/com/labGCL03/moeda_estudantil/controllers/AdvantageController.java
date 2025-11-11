@@ -33,7 +33,7 @@ public class AdvantageController {
 
     @Operation(
             summary = "Listar todas as vantagens",
-            description = "Retorna uma lista com todas as vantagens cadastradas no sistema. Alunos podem acessar."
+            description = "Retorna uma lista com todas as vantagens cadastradas no sistema. Alunos podem acessar (sem ver quantidade disponível)."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de vantagens retornada com sucesso"),
@@ -45,8 +45,10 @@ public class AdvantageController {
     @GetMapping
     public ResponseEntity<List<AdvantageResponseDTO>> getAllAdvantages() {
         List<Advantage> advantages = advantageService.findAll();
+        // Filtra apenas vantagens disponíveis para alunos
         List<AdvantageResponseDTO> response = advantages.stream()
-            .map(AdvantageResponseDTO::new)
+            .filter(Advantage::isAvailable)
+            .map(adv -> new AdvantageResponseDTO(adv, false, false)) // Não mostra quantidade para alunos
             .collect(Collectors.toList());
         
         return ResponseEntity.ok(response);
@@ -74,7 +76,7 @@ public class AdvantageController {
 
     @Operation(
             summary = "Listar vantagens de uma empresa",
-            description = "Retorna todas as vantagens oferecidas por uma empresa específica. Alunos podem acessar."
+            description = "Retorna todas as vantagens oferecidas por uma empresa específica. Se acessado pela própria empresa, mostra quantidade disponível."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de vantagens retornada com sucesso"),
@@ -85,10 +87,13 @@ public class AdvantageController {
     @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/company/{companyId}")
     public ResponseEntity<List<AdvantageResponseDTO>> getAdvantagesByCompany(
-            @Parameter(description = "ID da empresa") @PathVariable Long companyId) {
+            @Parameter(description = "ID da empresa") @PathVariable Long companyId,
+            @Parameter(description = "Se true, mostra quantidade disponível (apenas para empresas)") 
+            @RequestParam(defaultValue = "false") boolean showQuantity) {
         List<Advantage> advantages = advantageService.findByCompanyId(companyId);
         List<AdvantageResponseDTO> response = advantages.stream()
-            .map(AdvantageResponseDTO::new)
+            .filter(adv -> !showQuantity || adv.isAvailable()) // Se não mostrar quantidade, filtra disponíveis
+            .map(adv -> new AdvantageResponseDTO(adv, true, showQuantity))
             .collect(Collectors.toList());
         
         return ResponseEntity.ok(response);
@@ -96,7 +101,7 @@ public class AdvantageController {
 
     @Operation(
             summary = "Buscar vantagens dentro do orçamento",
-            description = "Retorna vantagens que custam até o valor especificado em moedas. Alunos podem acessar."
+            description = "Retorna vantagens que custam até o valor especificado em moedas. Alunos podem acessar (apenas disponíveis)."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de vantagens retornada com sucesso"),
@@ -111,7 +116,8 @@ public class AdvantageController {
             @PathVariable Integer maxCost) {
         List<Advantage> advantages = advantageService.findAdvantagesWithinBudget(maxCost);
         List<AdvantageResponseDTO> response = advantages.stream()
-            .map(AdvantageResponseDTO::new)
+            .filter(Advantage::isAvailable)
+            .map(adv -> new AdvantageResponseDTO(adv, false, false))
             .collect(Collectors.toList());
         
         return ResponseEntity.ok(response);
@@ -119,7 +125,7 @@ public class AdvantageController {
 
     @Operation(
             summary = "Buscar vantagens por nome",
-            description = "Retorna vantagens que contém o texto especificado no nome. Alunos podem acessar."
+            description = "Retorna vantagens que contém o texto especificado no nome. Alunos podem acessar (apenas disponíveis)."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de vantagens retornada com sucesso"),
@@ -134,7 +140,8 @@ public class AdvantageController {
             @RequestParam String name) {
         List<Advantage> advantages = advantageService.searchByName(name);
         List<AdvantageResponseDTO> response = advantages.stream()
-            .map(AdvantageResponseDTO::new)
+            .filter(Advantage::isAvailable)
+            .map(adv -> new AdvantageResponseDTO(adv, false, false))
             .collect(Collectors.toList());
         
         return ResponseEntity.ok(response);
@@ -159,7 +166,8 @@ public class AdvantageController {
             @Parameter(description = "Dados da vantagem a ser criada")
             @Valid @RequestBody AdvantageRequestDTO dto) {
         Advantage advantage = advantageService.create(dto);
-        AdvantageResponseDTO response = new AdvantageResponseDTO(advantage);
+        // Empresa pode ver a quantidade disponível na resposta
+        AdvantageResponseDTO response = new AdvantageResponseDTO(advantage, true, true);
         
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -185,7 +193,8 @@ public class AdvantageController {
             @Valid @RequestBody AdvantageUpdateDTO dto) {
         
         Advantage advantage = advantageService.update(id, dto);
-        AdvantageResponseDTO response = new AdvantageResponseDTO(advantage);
+        // Empresa pode ver a quantidade disponível na resposta
+        AdvantageResponseDTO response = new AdvantageResponseDTO(advantage, true, true);
         
         return ResponseEntity.ok(response);
     }

@@ -16,8 +16,10 @@ export const companyService = {
     await api.delete(`/companies/${id}`);
   },
 
-  getAdvantages: async (companyId: number): Promise<Advantage[]> => {
-    const response = await api.get<Advantage[]>(`/advantages/company/${companyId}`);
+  getAdvantages: async (companyId: number, showQuantity: boolean = true): Promise<Advantage[]> => {
+    const response = await api.get<Advantage[]>(`/advantages/company/${companyId}`, {
+      params: { showQuantity }
+    });
     return response.data;
   },
 
