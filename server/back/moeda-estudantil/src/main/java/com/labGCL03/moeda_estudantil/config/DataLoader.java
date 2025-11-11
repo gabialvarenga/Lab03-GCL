@@ -119,47 +119,9 @@ public class DataLoader implements CommandLineRunner {
             s1.setCourse("Engenharia de Software");
             s1.setInstitution(defaultInstitution);
             s1.setRole(Role.STUDENT);
-            s1.setCoinBalance(500); // Bastante moedas para testar
+            s1.setCoinBalance(500);
             studentRepository.save(s1);
             log.info("✓ Aluno criado: {} (500 moedas) - Login: aluno.rico@test.com / Senha: 123456", s1.getName());
-
-            // Aluno 2: Com poucas moedas
-            Student s2 = new Student();
-            s2.setName("Aluno Teste Médio");
-            s2.setEmail("aluno.medio@test.com");
-            s2.setPassword(passwordEncoder.encode("123456"));
-            s2.setCpf("22222222291");
-            s2.setRg("MG-22.222.222");
-            s2.setAddress("Avenida dos Testes, 200");
-            s2.setCourse("Administração");
-            s2.setInstitution(defaultInstitution);
-            s2.setRole(Role.STUDENT);
-            s2.setCoinBalance(50); // Poucas moedas
-            studentRepository.save(s2);
-            log.info("✓ Aluno criado: {} (50 moedas) - Login: aluno.medio@test.com / Senha: 123456", s2.getName());
-
-            // Aluno 3: Sem moedas
-            Student s3 = new Student();
-            s3.setName("Aluno Teste Pobre");
-            s3.setEmail("aluno.pobre@test.com");
-            s3.setPassword(passwordEncoder.encode("123456"));
-            s3.setCpf("33333333391");
-            s3.setRg("MG-33.333.333");
-            s3.setAddress("Praça dos Testes, 300");
-            s3.setCourse("Direito");
-            s3.setInstitution(defaultInstitution);
-            s3.setRole(Role.STUDENT);
-            s3.setCoinBalance(0); // Sem moedas
-            studentRepository.save(s3);
-            log.info("✓ Aluno criado: {} (0 moedas) - Login: aluno.pobre@test.com / Senha: 123456", s3.getName());
-
-            log.info("═══════════════════════════════════════════════════════════");
-            log.info("ALUNOS DE TESTE CRIADOS COM SUCESSO!");
-            log.info("═══════════════════════════════════════════════════════════");
-            log.info("Login 1: aluno.rico@test.com  | Senha: 123456 | Saldo: 500 moedas");
-            log.info("Login 2: aluno.medio@test.com | Senha: 123456 | Saldo: 50 moedas");
-            log.info("Login 3: aluno.pobre@test.com | Senha: 123456 | Saldo: 0 moedas");
-            log.info("═══════════════════════════════════════════════════════════");
         } else {
             log.info("Alunos já cadastrados no sistema. Total: {}", studentRepository.count());
         }
@@ -179,20 +141,20 @@ public class DataLoader implements CommandLineRunner {
 
             // Professor 1: Com bastante saldo
             Teacher t1 = new Teacher();
-            t1.setName("Professor João Silva");
+            t1.setName("João Silva");
             t1.setEmail("professor.joao@test.com");
             t1.setPassword(passwordEncoder.encode("123456"));
             t1.setCpf("44444444491");
             t1.setDepartment("Departamento de Engenharia");
             t1.setInstitution(defaultInstitution);
             t1.setRole(Role.TEACHER);
-            t1.setCurrentBalance(1000); // Saldo inicial de moedas para distribuir
+            t1.setCurrentBalance(1000); 
             teacherRepository.save(t1);
             log.info("✓ Professor criado: {} (1000 moedas) - Login: professor.joao@test.com / Senha: 123456", t1.getName());
 
             // Professor 2: Com saldo médio
             Teacher t2 = new Teacher();
-            t2.setName("Professora Maria Santos");
+            t2.setName("Maria Santos");
             t2.setEmail("professora.maria@test.com");
             t2.setPassword(passwordEncoder.encode("123456"));
             t2.setCpf("55555555591");
@@ -205,24 +167,16 @@ public class DataLoader implements CommandLineRunner {
 
             // Professor 3: Com pouco saldo
             Teacher t3 = new Teacher();
-            t3.setName("Professor Pedro Costa");
+            t3.setName("Pedro Costa");
             t3.setEmail("professor.pedro@test.com");
             t3.setPassword(passwordEncoder.encode("123456"));
             t3.setCpf("66666666691");
             t3.setDepartment("Departamento de Tecnologia");
             t3.setInstitution(defaultInstitution);
             t3.setRole(Role.TEACHER);
-            t3.setCurrentBalance(100); // Pouco saldo
+            t3.setCurrentBalance(100);
             teacherRepository.save(t3);
             log.info("✓ Professor criado: {} (100 moedas) - Login: professor.pedro@test.com / Senha: 123456", t3.getName());
-
-            log.info("═══════════════════════════════════════════════════════════");
-            log.info("PROFESSORES DE TESTE CRIADOS COM SUCESSO!");
-            log.info("═══════════════════════════════════════════════════════════");
-            log.info("Login 1: professor.joao@test.com   | Senha: 123456 | Saldo: 1000 moedas");
-            log.info("Login 2: professora.maria@test.com | Senha: 123456 | Saldo: 500 moedas");
-            log.info("Login 3: professor.pedro@test.com  | Senha: 123456 | Saldo: 100 moedas");
-            log.info("═══════════════════════════════════════════════════════════");
         } else {
             log.info("Professores já cadastrados no sistema. Total: {}", teacherRepository.count());
         }
