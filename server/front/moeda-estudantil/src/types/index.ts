@@ -1,6 +1,6 @@
 
 export type UserRole = 'STUDENT' | 'TEACHER' | 'COMPANY';
-export type TransactionType = 'TRANSFER' | 'PURCHASE' | 'CREDIT';
+export type TransactionType = 'SENT' | 'RECEIVED' | 'REDEEMED';
 
 export interface User {
   id: number;

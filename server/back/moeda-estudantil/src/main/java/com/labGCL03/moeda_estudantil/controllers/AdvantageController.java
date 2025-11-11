@@ -92,7 +92,9 @@ public class AdvantageController {
             @RequestParam(defaultValue = "false") boolean showQuantity) {
         List<Advantage> advantages = advantageService.findByCompanyId(companyId);
         List<AdvantageResponseDTO> response = advantages.stream()
-            .filter(adv -> !showQuantity || adv.isAvailable()) // Se não mostrar quantidade, filtra disponíveis
+            // Se showQuantity=true (empresa), mostra todas (incluindo esgotadas)
+            // Se showQuantity=false (aluno), mostra apenas disponíveis
+            .filter(adv -> showQuantity || adv.isAvailable())
             .map(adv -> new AdvantageResponseDTO(adv, true, showQuantity))
             .collect(Collectors.toList());
         
@@ -243,5 +245,35 @@ public class AdvantageController {
             @PathVariable Long id) {
         advantageService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "Reativar vantagem esgotada",
+            description = "Adiciona mais cupons a uma vantagem que estava esgotada, reativando-a. Requer role COMPANY ou ADMIN."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Vantagem reativada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Quantidade inválida",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Sem permissão (apenas COMPANY ou ADMIN)"),
+            @ApiResponse(responseCode = "404", description = "Vantagem não encontrada",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "Bearer Authentication")
+    @PatchMapping("/{id}/reactivate")
+    public ResponseEntity<AdvantageResponseDTO> reactivateAdvantage(
+            @Parameter(description = "ID da vantagem") @PathVariable Long id,
+            @Parameter(description = "Quantidade de cupons a adicionar", example = "10")
+            @RequestParam Integer quantity) {
+        
+        if (quantity == null || quantity <= 0) {
+            throw new IllegalArgumentException("Quantidade deve ser maior que zero");
+        }
+        
+        Advantage advantage = advantageService.reactivateAdvantage(id, quantity);
+        AdvantageResponseDTO response = new AdvantageResponseDTO(advantage, true, true);
+        
+        return ResponseEntity.ok(response);
     }
 }

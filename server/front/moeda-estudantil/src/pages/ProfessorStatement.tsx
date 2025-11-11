@@ -82,36 +82,44 @@ const ProfessorStatement: React.FC = () => {
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
-              {transactions.map((transaction) => (
-                <div key={transaction.id} className="p-6 hover:bg-gray-50 transition-colors">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-2xl">
-                          {transaction.type === 'TRANSFER' && '💸'}
-                          {transaction.type === 'CREDIT' && '💳'}
-                        </span>
-                        <span className="font-semibold text-gray-900">
-                          {transaction.type === 'TRANSFER' && 'Envio de Moedas'}
-                          {transaction.type === 'CREDIT' && 'Crédito Semestral'}
-                        </span>
+              {transactions.map((transaction) => {
+                // Determina se é recebimento (RECEIVED) ou envio (SENT) para o professor
+                const isIncoming = transaction.type === 'RECEIVED';
+                const isOutgoing = transaction.type === 'SENT';
+                
+                return (
+                  <div key={transaction.id} className="p-6 hover:bg-gray-50 transition-colors">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-2xl">
+                            {transaction.type === 'SENT' && '💸'}
+                            {transaction.type === 'RECEIVED' && '💳'}
+                          </span>
+                          <span className="font-semibold text-gray-900">
+                            {transaction.type === 'SENT' && 'Envio de Moedas'}
+                            {transaction.type === 'RECEIVED' && 'Crédito Recebido'}
+                          </span>
+                        </div>
+                        <p className="text-gray-600 mb-1">{transaction.reason}</p>
+                        {transaction.receiverName && isOutgoing && (
+                          <p className="text-sm text-gray-500">
+                            👨‍🎓 Enviado para: <span className="font-medium">{transaction.receiverName}</span>
+                          </p>
+                        )}
+                        {transaction.senderName && isIncoming && (
+                          <p className="text-sm text-gray-500">De: {transaction.senderName}</p>
+                        )}
+                        <p className="text-sm text-gray-500 mt-1">{formatDate(transaction.date)}</p>
                       </div>
-                      <p className="text-gray-600 mb-1">{transaction.reason}</p>
-                      {transaction.senderName && (
-                        <p className="text-sm text-gray-500">De: {transaction.senderName}</p>
-                      )}
-                      {transaction.receiverName && (
-                        <p className="text-sm text-gray-500">Para: {transaction.receiverName}</p>
-                      )}
-                      <p className="text-sm text-gray-500 mt-1">{formatDate(transaction.date)}</p>
-                    </div>
-                    <div className={`text-2xl font-bold ml-4 ${transaction.type === 'TRANSFER' ? 'text-red-600' : 'text-green-600'}`}>
-                      {transaction.type === 'TRANSFER' ? '-' : '+'}
-                      {transaction.amount}
+                      <div className={`text-2xl font-bold ml-4 ${isOutgoing ? 'text-red-600' : 'text-green-600'}`}>
+                        {isOutgoing ? '-' : '+'}
+                        {transaction.amount}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

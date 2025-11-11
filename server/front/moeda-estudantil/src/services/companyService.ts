@@ -41,6 +41,13 @@ export const companyService = {
     await api.delete(`/advantages/${advantageId}`);
   },
 
+  reactivateAdvantage: async (advantageId: number, quantity: number): Promise<Advantage> => {
+    const response = await api.patch<Advantage>(`/advantages/${advantageId}/reactivate`, null, {
+      params: { quantity }
+    });
+    return response.data;
+  },
+
   uploadImage: async (formData: FormData): Promise<{ url: string }> => {
     const response = await api.post<{ url: string }>('/upload/image', formData, {
       headers: {

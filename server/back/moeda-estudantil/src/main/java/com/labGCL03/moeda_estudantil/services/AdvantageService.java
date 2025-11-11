@@ -155,4 +155,30 @@ public class AdvantageService {
         
         return advantageRepository.findAdvantagesByCompanyAndCostRange(companyId, minCost, maxCost);
     }
+
+    /**
+     * Reativa uma vantagem esgotada adicionando mais cupons
+     */
+    public Advantage reactivateAdvantage(Long id, Integer quantityToAdd) {
+        log.info("Reativando vantagem ID: {} com {} cupons", id, quantityToAdd);
+        
+        Advantage advantage = findById(id);
+        
+        if (quantityToAdd == null || quantityToAdd <= 0) {
+            throw new BusinessException("Quantidade a adicionar deve ser maior que zero");
+        }
+        
+        // Se a vantagem era ilimitada (null), começa com a quantidade fornecida
+        if (advantage.getAvailableQuantity() == null) {
+            advantage.setAvailableQuantity(quantityToAdd);
+        } else {
+            // Adiciona à quantidade existente
+            advantage.setAvailableQuantity(advantage.getAvailableQuantity() + quantityToAdd);
+        }
+        
+        Advantage reactivatedAdvantage = advantageRepository.save(advantage);
+        log.info("Vantagem reativada com sucesso. Nova quantidade: {}", reactivatedAdvantage.getAvailableQuantity());
+        
+        return reactivatedAdvantage;
+    }
 }
