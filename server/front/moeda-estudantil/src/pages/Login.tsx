@@ -20,9 +20,11 @@ const Login: React.FC = () => {
       
       // Redirect based on role
       const role = localStorage.getItem('userRole');
+      
+      // Show success message briefly before redirect
       if (role === 'STUDENT') {
         navigate('/student/dashboard');
-      } else if (role === 'PROFESSOR') {
+      } else if (role === 'TEACHER') {
         navigate('/professor/dashboard');
       } else if (role === 'COMPANY') {
         navigate('/company/dashboard');

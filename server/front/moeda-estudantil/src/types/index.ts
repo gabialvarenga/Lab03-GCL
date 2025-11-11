@@ -1,5 +1,5 @@
 
-export type UserRole = 'STUDENT' | 'PROFESSOR' | 'COMPANY';
+export type UserRole = 'STUDENT' | 'TEACHER' | 'COMPANY';
 export type TransactionType = 'TRANSFER' | 'PURCHASE' | 'CREDIT';
 
 export interface User {

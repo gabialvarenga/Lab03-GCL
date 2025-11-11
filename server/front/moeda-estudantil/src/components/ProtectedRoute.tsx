@@ -24,7 +24,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRole }
     // Redirect to appropriate dashboard based on role
     if (userRole === 'STUDENT') {
       return <Navigate to="/student/dashboard" replace />;
-    } else if (userRole === 'PROFESSOR') {
+    } else if (userRole === 'TEACHER') {
       return <Navigate to="/professor/dashboard" replace />;
     } else if (userRole === 'COMPANY') {
       return <Navigate to="/company/dashboard" replace />;

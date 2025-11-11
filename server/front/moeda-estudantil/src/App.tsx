@@ -16,6 +16,7 @@ import StudentProfile from './pages/StudentProfile';
 import ProfessorDashboard from './pages/ProfessorDashboard';
 import ProfessorTransfer from './pages/ProfessorTransfer';
 import ProfessorStatement from './pages/ProfessorStatement';
+import ProfessorProfile from './pages/ProfessorProfile';
 
 // Company Pages
 import CompanyDashboard from './pages/CompanyDashboard';
@@ -73,7 +74,7 @@ function App() {
           <Route
             path="/professor/dashboard"
             element={
-              <ProtectedRoute allowedRole="PROFESSOR">
+              <ProtectedRoute allowedRole="TEACHER">
                 <ProfessorDashboard />
               </ProtectedRoute>
             }
@@ -81,7 +82,7 @@ function App() {
           <Route
             path="/professor/transfer"
             element={
-              <ProtectedRoute allowedRole="PROFESSOR">
+              <ProtectedRoute allowedRole="TEACHER">
                 <ProfessorTransfer />
               </ProtectedRoute>
             }
@@ -89,7 +90,7 @@ function App() {
           <Route
             path="/professor/statement"
             element={
-              <ProtectedRoute allowedRole="PROFESSOR">
+              <ProtectedRoute allowedRole="TEACHER">
                 <ProfessorStatement />
               </ProtectedRoute>
             }
@@ -97,8 +98,8 @@ function App() {
           <Route
             path="/professor/profile"
             element={
-              <ProtectedRoute allowedRole="PROFESSOR">
-                <ProfessorDashboard />
+              <ProtectedRoute allowedRole="TEACHER">
+                <ProfessorProfile />
               </ProtectedRoute>
             }
           />

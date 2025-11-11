@@ -1,5 +1,6 @@
 package com.labGCL03.moeda_estudantil.services;
 
+import com.labGCL03.moeda_estudantil.dto.TeacherUpdateDTO;
 import com.labGCL03.moeda_estudantil.entities.Teacher;
 import com.labGCL03.moeda_estudantil.repositories.TeacherRepository;
 import jakarta.transaction.Transactional;
@@ -92,6 +93,25 @@ public class TeacherService {
     }
 
     public Teacher save(Teacher teacher) {
+        return teacherRepository.save(teacher);
+    }
+
+    public Teacher update(Long id, TeacherUpdateDTO dto) {
+        Teacher teacher = findById(id);
+        
+        // Verifica se o email já está em uso por outro professor
+        if (!teacher.getEmail().equals(dto.getEmail())) {
+            teacherRepository.findByEmail(dto.getEmail()).ifPresent(t -> {
+                if (!t.getId().equals(id)) {
+                    throw new IllegalArgumentException("Email já está em uso");
+                }
+            });
+        }
+        
+        teacher.setName(dto.getName());
+        teacher.setEmail(dto.getEmail());
+        teacher.setDepartment(dto.getDepartment());
+        
         return teacherRepository.save(teacher);
     }
 }

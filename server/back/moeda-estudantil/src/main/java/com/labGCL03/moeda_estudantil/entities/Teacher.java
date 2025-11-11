@@ -20,7 +20,8 @@ public class Teacher extends User {
     @Column(unique = true)
     private String cpf;
 
-
+    @Column(length = 200)
+    private String department;
 
     @Column(name = "current_balance", nullable = false)
     private Integer currentBalance = 1000;
