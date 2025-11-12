@@ -53,7 +53,13 @@ export interface Professor {
   cpf: string;
   department: string;
   balance: number;
-  institution: Institution;
+  institutionId?: number;
+  institutionName?: string;
+  // Mantido para compatibilidade com código existente que acessa professor.institution.name
+  institution?: {
+    id?: number;
+    name?: string;
+  };
 }
 
 // Company Types

@@ -138,7 +138,7 @@ const ProfessorProfile: React.FC = () => {
                 <div className="border-l-4 border-blue-500 pl-4">
                   <span className="text-sm text-gray-500 font-medium block mb-1">Instituição</span>
                   <span className="text-lg text-gray-900">
-                    {professor?.institution?.name || 'Não informada'}
+                    {professor?.institutionName || professor?.institution?.name || 'Não informada'}
                   </span>
                 </div>
 
