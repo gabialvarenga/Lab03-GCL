@@ -13,12 +13,12 @@ export const professorService = {
   },
 
   getBalance: async (id: number): Promise<number> => {
-    const response = await api.get<{ balance: number }>(`/teachers/${id}/balance`);
-    return response.data.balance;
+    const response = await api.get<number>(`/teachers/${id}/balance`);
+    return response.data;
   },
 
-  getStudents: async (): Promise<Student[]> => {
-    const response = await api.get<Student[]>('/students');
+  getStudents: async (professorId: number): Promise<Student[]> => {
+    const response = await api.get<Student[]>(`/teachers/${professorId}/students`);
     return response.data;
   },
 

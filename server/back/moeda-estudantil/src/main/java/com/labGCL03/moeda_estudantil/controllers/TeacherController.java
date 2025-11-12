@@ -1,12 +1,15 @@
 package com.labGCL03.moeda_estudantil.controllers;
 
+import com.labGCL03.moeda_estudantil.dto.StudentResponseDTO;
 import com.labGCL03.moeda_estudantil.dto.TeacherResponseDTO;
 import com.labGCL03.moeda_estudantil.dto.TeacherUpdateDTO;
 import com.labGCL03.moeda_estudantil.dto.TransactionResponseDTO;
 import com.labGCL03.moeda_estudantil.dto.TransferCoinsDTO;
+import com.labGCL03.moeda_estudantil.entities.Student;
 import com.labGCL03.moeda_estudantil.entities.Teacher;
 import com.labGCL03.moeda_estudantil.entities.Transaction;
 import com.labGCL03.moeda_estudantil.exception.ErrorResponse;
+import com.labGCL03.moeda_estudantil.services.StudentService;
 import com.labGCL03.moeda_estudantil.services.TeacherService;
 import com.labGCL03.moeda_estudantil.services.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +37,7 @@ public class TeacherController {
 
     private final TeacherService teacherService;
     private final TransactionService transactionService;
+    private final StudentService studentService;
 
     @Operation(
             summary = "Buscar professor por ID",
@@ -51,6 +55,33 @@ public class TeacherController {
             @Parameter(description = "ID do professor", required = true) @PathVariable Long id) {
         Teacher teacher = teacherService.findById(id);
         TeacherResponseDTO response = new TeacherResponseDTO(teacher);
+        
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Buscar alunos da mesma instituição do professor",
+            description = "Retorna a lista de alunos que pertencem à mesma instituição do professor. Requer role TEACHER."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de alunos retornada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Sem permissão (requer TEACHER)"),
+            @ApiResponse(responseCode = "404", description = "Professor não encontrado",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @SecurityRequirement(name = "Bearer Authentication")
+    @GetMapping("/{id}/students")
+    public ResponseEntity<List<StudentResponseDTO>> getStudentsByInstitution(
+            @Parameter(description = "ID do professor", required = true) @PathVariable Long id) {
+        Teacher teacher = teacherService.findById(id);
+        
+        // Buscar todos os alunos da mesma instituição do professor
+        List<Student> students = studentService.findByInstitution(teacher.getInstitution().getId());
+        
+        List<StudentResponseDTO> response = students.stream()
+                .map(StudentResponseDTO::new)
+                .collect(Collectors.toList());
         
         return ResponseEntity.ok(response);
     }

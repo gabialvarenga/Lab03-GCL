@@ -25,7 +25,7 @@ const ProfessorTransfer: React.FC = () => {
     
     try {
       const [studentsData, balanceData] = await Promise.all([
-        professorService.getStudents(),
+        professorService.getStudents(userId), // Passa o ID do professor
         professorService.getBalance(userId)
       ]);
       setStudents(studentsData);
@@ -117,7 +117,7 @@ const ProfessorTransfer: React.FC = () => {
               <div className="mb-4">
                 <input
                   type="text"
-                  placeholder="Buscar por nome, email ou curso..."
+                  placeholder="Buscar por nome ou email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
@@ -163,11 +163,10 @@ const ProfessorTransfer: React.FC = () => {
             </div>
           </div>
 
-          {/* Coluna direita - Formulário de transferência */}
+          {/* Coluna direita - Formulário de transferência*/}
           <div className="lg:col-span-1">
             <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-md p-6 space-y-6 sticky top-8">
               <h2 className="text-xl font-bold text-gray-900">Detalhes da Transferência</h2>
-
               {selectedStudent === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   <svg className="w-16 h-16 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

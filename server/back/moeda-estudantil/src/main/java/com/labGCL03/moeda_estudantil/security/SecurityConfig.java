@@ -61,9 +61,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/api/students/**").hasAnyRole("STUDENT", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/students/**").hasAnyRole("STUDENT", "ADMIN") // STUDENT pode deletar próprio perfil
                         
-                        // Professores
+                        // Professores - Regras específicas ANTES das genéricas
+                        .requestMatchers(HttpMethod.POST, "/api/teachers/*/transfer").hasAnyRole("TEACHER", "ADMIN") // Professor pode transferir
                         .requestMatchers(HttpMethod.GET, "/api/teachers/**").hasAnyRole("TEACHER", "STUDENT", "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/teachers/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/teachers/**").hasRole("ADMIN") // Outras operações POST apenas ADMIN
                         .requestMatchers(HttpMethod.PUT, "/api/teachers/**").hasAnyRole("TEACHER", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/teachers/**").hasRole("ADMIN")
                         

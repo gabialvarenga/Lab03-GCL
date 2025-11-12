@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { professorService } from '../services/professorService';
-import type { Transaction } from '../types';
+import type { Professor, Transaction } from '../types';
 
 const ProfessorStatement: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [professor, setProfessor] = useState<Professor | null>(null);
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
   const { userId } = useAuth();
@@ -13,6 +14,7 @@ const ProfessorStatement: React.FC = () => {
 
   useEffect(() => {
     loadData();
+    loadProfessorData();
   }, []);
 
   const loadData = async () => {
@@ -31,6 +33,19 @@ const ProfessorStatement: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const loadProfessorData = async () => {
+      if (!userId) return;
+      
+      try {
+        const data = await professorService.getProfile(userId);
+        setProfessor(data);
+      } catch (error) {
+        console.error('Erro ao carregar dados do professor:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-BR', {
@@ -67,8 +82,7 @@ const ProfessorStatement: React.FC = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-lg p-8 text-white mb-8">
           <h3 className="text-lg font-medium mb-2 opacity-90">Saldo Atual</h3>
-          <p className="text-5xl font-bold mb-2">{balance} <span className="text-2xl">moedas</span></p>
-          <p className="text-sm opacity-90">💡 Você recebe 1.000 moedas por semestre</p>
+          <p className="text-5xl font-bold mb-2">{professor?.balance || 0} <span className="text-2xl">moedas</span></p>
         </div>
 
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
