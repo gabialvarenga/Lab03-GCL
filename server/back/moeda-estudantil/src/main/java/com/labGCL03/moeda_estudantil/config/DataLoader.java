@@ -180,22 +180,64 @@ public class DataLoader implements CommandLineRunner {
                 return;
             }
             
-            Institution defaultInstitution = institutions.get(0);
+            // Buscar instituições específicas
+            Institution pucMinas = institutions.stream()
+                .filter(inst -> "Pontifícia Universidade Católica de Minas Gerais (PUC Minas)".equals(inst.getName()))
+                .findFirst()
+                .orElse(institutions.get(0));
+            
+            Institution ufmg = institutions.stream()
+                .filter(inst -> "Universidade Federal de Minas Gerais (UFMG)".equals(inst.getName()))
+                .findFirst()
+                .orElse(institutions.get(0));
 
-            // Aluno 1: Com muitas moedas
+            // Aluno 1: PUC Minas - Engenharia de Software (mesma instituição do professor João)
             Student s1 = new Student();
-            s1.setName("Aluno Teste Rico");
-            s1.setEmail("aluno.rico@test.com");
+            s1.setName("Carlos José Gomes");
+            s1.setEmail("carlos.aluno@pucminas.br");
             s1.setPassword(passwordEncoder.encode("123456"));
             s1.setCpf("11111111191");
             s1.setRg("MG-11.111.111");
             s1.setAddress("Rua dos Testes, 100");
             s1.setCourse("Engenharia de Software");
-            s1.setInstitution(defaultInstitution);
+            s1.setInstitution(pucMinas);
             s1.setRole(Role.STUDENT);
             s1.setCoinBalance(500);
             studentRepository.save(s1);
-            log.info("✓ Aluno criado: {} (500 moedas) - Login: aluno.rico@test.com / Senha: 123456", s1.getName());
+            log.info("✓ Aluno criado: {} ({} - {}) - 500 moedas - Login: carlos.aluno@pucminas.br / Senha: 123456", 
+                s1.getName(), pucMinas.getName(), s1.getCourse());
+
+            // Aluno 2: UFMG - Ciência da Computação (mesma instituição da professora Maria)
+            Student s2 = new Student();
+            s2.setName("Maria Oliveira");
+            s2.setEmail("maria.oliveira@ufmg.br");
+            s2.setPassword(passwordEncoder.encode("123456"));
+            s2.setCpf("22222222292");
+            s2.setRg("MG-22.222.222");
+            s2.setAddress("Av. Teste, 200");
+            s2.setCourse("Ciência da Computação");
+            s2.setInstitution(ufmg);
+            s2.setRole(Role.STUDENT);
+            s2.setCoinBalance(300);
+            studentRepository.save(s2);
+            log.info("✓ Aluno criado: {} ({} - {}) - 300 moedas - Login: maria.oliveira@ufmg.br / Senha: 123456", 
+                s2.getName(), ufmg.getName(), s2.getCourse());
+
+            // Aluno 3: PUC Minas - Sistemas de Informação (mesma instituição do professor Pedro)
+            Student s3 = new Student();
+            s3.setName("Vitor Astolfi");
+            s3.setEmail("vitor.astolfi@pucminas.br");
+            s3.setPassword(passwordEncoder.encode("123456"));
+            s3.setCpf("33333333393");
+            s3.setRg("MG-33.333.333");
+            s3.setAddress("Rua Principal, 300");
+            s3.setCourse("Sistemas de Informação");
+            s3.setInstitution(pucMinas);
+            s3.setRole(Role.STUDENT);
+            s3.setCoinBalance(100);
+            studentRepository.save(s3);
+            log.info("✓ Aluno criado: {} ({} - {}) - 100 moedas - Login: carlos.santos@test.com / Senha: 123456", 
+                s3.getName(), pucMinas.getName(), s3.getCourse());
         } else {
             log.info("Alunos já cadastrados no sistema. Total: {}", studentRepository.count());
         }
@@ -211,54 +253,58 @@ public class DataLoader implements CommandLineRunner {
                 return;
             }
             
-            Institution defaultInstitution = institutions.get(0);
+            // Buscar instituições específicas
+            Institution pucMinas = institutions.stream()
+                .filter(inst -> "Pontifícia Universidade Católica de Minas Gerais (PUC Minas)".equals(inst.getName()))
+                .findFirst()
+                .orElse(institutions.get(0));
+            
+            Institution ufmg = institutions.stream()
+                .filter(inst -> "Universidade Federal de Minas Gerais (UFMG)".equals(inst.getName()))
+                .findFirst()
+                .orElse(institutions.get(0));
 
-            // Professor 1: Com bastante saldo
+            // Professor 1: PUC Minas - Com bastante saldo
             Teacher t1 = new Teacher();
             t1.setName("João Silva");
-            t1.setEmail("professor.joao@test.com");
+            t1.setEmail("professor.joao@pucminas.br");
             t1.setPassword(passwordEncoder.encode("123456"));
             t1.setCpf("44444444491");
-            t1.setDepartment("Departamento de Engenharia");
-            t1.setInstitution(defaultInstitution);
+            t1.setDepartment("Departamento de Engenharia de Software");
+            t1.setInstitution(pucMinas);
             t1.setRole(Role.TEACHER);
             t1.setCurrentBalance(1000); 
             teacherRepository.save(t1);
-            log.info("✓ Professor criado: {} (1000 moedas) - Login: professor.joao@test.com / Senha: 123456", t1.getName());
-            // Atribuir uma Institution (não uma String). Exemplo: buscar por nome ou usar a default.
-            Institution assignedInstitution = institutions.stream()
-                .filter(inst -> "Pontifícia Universidade Católica de Minas Gerais (PUC Minas)".equals(inst.getName()))
-                .findFirst()
-                .orElse(defaultInstitution);
+            log.info("✓ Professor criado: {} ({}) - 1000 moedas - Login: professor.joao@pucminas.br / Senha: 123456", 
+                t1.getName(), pucMinas.getName());
 
-            t1.setInstitution(assignedInstitution);
-            // salvar novamente para garantir que a alteração seja persistida
-            teacherRepository.save(t1);
-            // Professor 2: Com saldo médio
+            // Professor 2: UFMG - Com saldo médio
             Teacher t2 = new Teacher();
             t2.setName("Maria Santos");
-            t2.setEmail("professora.maria@test.com");
+            t2.setEmail("professora.maria@ufmg.br");
             t2.setPassword(passwordEncoder.encode("123456"));
             t2.setCpf("55555555591");
-            t2.setDepartment("Departamento de Ciências Humanas");
-            t2.setInstitution(defaultInstitution);
+            t2.setDepartment("Departamento de Ciência da Computação");
+            t2.setInstitution(ufmg);
             t2.setRole(Role.TEACHER);
-            t2.setCurrentBalance(500); // Saldo médio
+            t2.setCurrentBalance(500);
             teacherRepository.save(t2);
-            log.info("✓ Professor criado: {} (500 moedas) - Login: professora.maria@test.com / Senha: 123456", t2.getName());
+            log.info("✓ Professor criado: {} ({}) - 500 moedas - Login: professora.maria@ufmg.br / Senha: 123456", 
+                t2.getName(), ufmg.getName());
 
-            // Professor 3: Com pouco saldo
+            // Professor 3: PUC Minas - Com pouco saldo
             Teacher t3 = new Teacher();
             t3.setName("Pedro Costa");
-            t3.setEmail("professor.pedro@test.com");
+            t3.setEmail("professor.pedro@pucminas.br");
             t3.setPassword(passwordEncoder.encode("123456"));
             t3.setCpf("66666666691");
-            t3.setDepartment("Departamento de Tecnologia");
-            t3.setInstitution(defaultInstitution);
+            t3.setDepartment("Departamento de Sistemas de Informação");
+            t3.setInstitution(pucMinas);
             t3.setRole(Role.TEACHER);
             t3.setCurrentBalance(100);
             teacherRepository.save(t3);
-            log.info("✓ Professor criado: {} (100 moedas) - Login: professor.pedro@test.com / Senha: 123456", t3.getName());
+            log.info("✓ Professor criado: {} ({}) - 100 moedas - Login: professor.pedro@pucminas.br / Senha: 123456", 
+                t3.getName(), pucMinas.getName());
         } else {
             log.info("Professores já cadastrados no sistema. Total: {}", teacherRepository.count());
         }
