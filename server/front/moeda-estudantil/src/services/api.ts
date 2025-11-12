@@ -9,12 +9,64 @@ const api = axios.create({
   },
 });
 
+// Função para decodificar JWT e verificar tempo de expiração
+const isTokenExpiringSoon = (token: string): boolean => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const expirationTime = payload.exp * 1000; // Converter para ms
+    const currentTime = Date.now();
+    const timeUntilExpiration = expirationTime - currentTime;
+    
+    // Se faltam menos de 5 minutos (300000 ms) para expirar
+    return timeUntilExpiration < 300000;
+  } catch {
+    return false;
+  }
+};
+
+// Função para renovar o token
+const refreshToken = async (): Promise<string | null> => {
+  try {
+    const currentToken = localStorage.getItem('token');
+    if (!currentToken) return null;
+
+    const response = await axios.post(
+      `${API_BASE_URL}/auth/refresh`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${currentToken}`,
+        },
+      }
+    );
+
+    const newToken = response.data.token;
+    localStorage.setItem('token', newToken);
+    console.log('✓ Token renovado automaticamente');
+    return newToken;
+  } catch (error) {
+    console.error('Erro ao renovar token:', error);
+    return null;
+  }
+};
+
 // Add token to requests if available
 api.interceptors.request.use(
-  (config) => {
+  async (config) => {
     const token = localStorage.getItem('token');
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      // Verifica se o token está próximo de expirar
+      if (isTokenExpiringSoon(token)) {
+        console.log('⚠ Token expirando em breve, renovando...');
+        const newToken = await refreshToken();
+        if (newToken) {
+          config.headers.Authorization = `Bearer ${newToken}`;
+        } else {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      } else {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
@@ -32,7 +84,8 @@ api.interceptors.response.use(
       localStorage.removeItem('token');
       localStorage.removeItem('userRole');
       localStorage.removeItem('userId');
-      window.location.href = '/login';
+      localStorage.removeItem('userEmail');
+      globalThis.location.href = '/login';
     }
     return Promise.reject(error);
   }

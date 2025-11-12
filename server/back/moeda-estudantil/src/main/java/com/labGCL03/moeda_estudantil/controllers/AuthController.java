@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -42,5 +44,21 @@ public class AuthController {
     public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
         LoginResponseDTO response = authService.login(request);
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Renovar token JWT",
+            description = "Renova o token JWT do usuário autenticado sem precisar fazer login novamente. " +
+                    "Este endpoint requer autenticação com o token atual (mesmo que próximo de expirar)."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Token renovado com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Token inválido ou expirado",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @PostMapping("/refresh")
+    public ResponseEntity<Map<String, String>> refreshToken(@RequestHeader("Authorization") String authHeader) {
+        String newToken = authService.refreshToken(authHeader);
+        return ResponseEntity.ok(Map.of("token", newToken));
     }
 }

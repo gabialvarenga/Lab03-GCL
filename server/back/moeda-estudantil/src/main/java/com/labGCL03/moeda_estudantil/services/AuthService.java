@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -58,6 +57,38 @@ public class AuthService {
         } catch (Exception e) {
             log.error("Erro ao fazer login: {}", e.getMessage());
             throw new BusinessException("Email ou senha inválidos");
+        }
+    }
+
+    /**
+     * Renova o token JWT do usuário autenticado
+     */
+    public String refreshToken(String authHeader) {
+        log.info("Tentativa de renovação de token");
+
+        try {
+            // Extrai o token do header
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                throw new BusinessException("Token inválido");
+            }
+
+            String token = authHeader.substring(7);
+            String userEmail = jwtService.extractUsername(token);
+
+            // Valida se o usuário existe
+            userRepository.findByEmail(userEmail)
+                    .orElseThrow(() -> new BusinessException("Usuário não encontrado"));
+
+            // Gera novo token
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+            String newToken = jwtService.generateToken(userDetails);
+
+            log.info("Token renovado com sucesso para: {}", userEmail);
+            return newToken;
+
+        } catch (Exception e) {
+            log.error("Erro ao renovar token: {}", e.getMessage());
+            throw new BusinessException("Não foi possível renovar o token");
         }
     }
 }

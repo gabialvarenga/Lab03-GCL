@@ -68,6 +68,27 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
+    /**
+     * Verifica se o token vai expirar em breve (próximos 5 minutos)
+     */
+    public boolean isTokenExpiringSoon(String token) {
+        try {
+            Date expiration = extractExpiration(token);
+            long timeUntilExpiration = expiration.getTime() - System.currentTimeMillis();
+            // Se faltam menos de 5 minutos (300000 ms) para expirar
+            return timeUntilExpiration < 300000;
+        } catch (Exception e) {
+            return true; // Se houver erro, considerar que precisa renovar
+        }
+    }
+
+    /**
+     * Extrai a data de emissão do token
+     */
+    public Date extractIssuedAt(String token) {
+        return extractClaim(token, Claims::getIssuedAt);
+    }
+
     private Claims extractAllClaims(String token) {
         return Jwts
                 .parser()
