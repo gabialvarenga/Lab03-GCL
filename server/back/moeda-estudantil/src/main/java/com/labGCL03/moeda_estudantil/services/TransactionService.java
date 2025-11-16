@@ -73,12 +73,24 @@ public class TransactionService {
         return transactionRepository.findByReceiverIdOrderByDateDesc(studentId);
     }
 
+    public List<Transaction> getStudentTransactionHistory(Long studentId, LocalDateTime startDate, LocalDateTime endDate) {
+        return transactionRepository.findTransactionsByUserIdAndDateRange(studentId, startDate, endDate);
+    }
+
     public List<Transaction> getTeacherTransactionHistory(Long teacherId) {
         return transactionRepository.findBySenderIdOrderByDateDesc(teacherId);
     }
 
+    public List<Transaction> getTeacherTransactionHistory(Long teacherId, LocalDateTime startDate, LocalDateTime endDate) {
+        return transactionRepository.findTransactionsByUserIdAndDateRange(teacherId, startDate, endDate);
+    }
+
     public List<Transaction> getUserTransactionHistory(Long userId) {
         return transactionRepository.findAllTransactionsByUserId(userId);
+    }
+
+    public List<Transaction> getUserTransactionHistory(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
+        return transactionRepository.findTransactionsByUserIdAndDateRange(userId, startDate, endDate);
     }
 
     public Transaction createSemesterCreditTransaction(Teacher teacher, Integer amount) {

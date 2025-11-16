@@ -26,7 +26,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/teachers")
@@ -81,7 +80,7 @@ public class TeacherController {
         
         List<StudentResponseDTO> response = students.stream()
                 .map(StudentResponseDTO::new)
-                .collect(Collectors.toList());
+                .toList();
         
         return ResponseEntity.ok(response);
     }
@@ -131,7 +130,7 @@ public class TeacherController {
 
     @Operation(
             summary = "Obter transações do professor",
-            description = "Retorna o histórico de transações do professor. Requer autenticação."
+            description = "Retorna o histórico de transações do professor. Requer autenticação. Aceita parâmetros opcionais de data para filtrar."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Transações retornadas com sucesso"),
@@ -142,11 +141,25 @@ public class TeacherController {
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/{id}/transactions")
     public ResponseEntity<List<TransactionResponseDTO>> getTransactions(
-            @Parameter(description = "ID do professor", required = true) @PathVariable Long id) {
-        List<Transaction> transactions = transactionService.getTeacherTransactionHistory(id);
+            @Parameter(description = "ID do professor", required = true) @PathVariable Long id,
+            @Parameter(description = "Data inicial do filtro (formato ISO: yyyy-MM-dd'T'HH:mm:ss)", required = false) 
+            @RequestParam(required = false) String startDate,
+            @Parameter(description = "Data final do filtro (formato ISO: yyyy-MM-dd'T'HH:mm:ss)", required = false) 
+            @RequestParam(required = false) String endDate) {
+        
+        List<Transaction> transactions;
+        
+        if (startDate != null && endDate != null) {
+            java.time.LocalDateTime start = java.time.LocalDateTime.parse(startDate);
+            java.time.LocalDateTime end = java.time.LocalDateTime.parse(endDate);
+            transactions = transactionService.getUserTransactionHistory(id, start, end);
+        } else {
+            transactions = transactionService.getUserTransactionHistory(id);
+        }
+        
         List<TransactionResponseDTO> response = transactions.stream()
                 .map(TransactionResponseDTO::new)
-                .collect(Collectors.toList());
+                .toList();
         return ResponseEntity.ok(response);
     }
 

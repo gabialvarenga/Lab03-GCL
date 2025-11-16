@@ -8,6 +8,9 @@ const StudentStatement: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [isFiltering, setIsFiltering] = useState(false);
   const { userId } = useAuth();
   const navigate = useNavigate();
 
@@ -15,12 +18,12 @@ const StudentStatement: React.FC = () => {
     loadData();
   }, []);
 
-  const loadData = async () => {
+  const loadData = async (filterStartDate?: string, filterEndDate?: string) => {
     if (!userId) return;
     
     try {
       const [transactionsData, profileData] = await Promise.all([
-        studentService.getTransactions(userId),
+        studentService.getTransactions(userId, filterStartDate, filterEndDate),
         studentService.getProfile(userId)
       ]);
       setTransactions(transactionsData);
@@ -30,6 +33,23 @@ const StudentStatement: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFilter = () => {
+    if (startDate && endDate) {
+      setIsFiltering(true);
+      // Converter datas para formato ISO esperado pelo backend
+      const startDateTime = new Date(startDate).toISOString().slice(0, 19);
+      const endDateTime = new Date(endDate + 'T23:59:59').toISOString().slice(0, 19);
+      loadData(startDateTime, endDateTime);
+    }
+  };
+
+  const handleClearFilter = () => {
+    setStartDate('');
+    setEndDate('');
+    setIsFiltering(false);
+    loadData();
   };
 
   const formatDate = (dateString: string) => {
@@ -68,6 +88,53 @@ const StudentStatement: React.FC = () => {
         <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg p-8 text-white mb-8">
           <h3 className="text-lg font-medium mb-2 opacity-90">Saldo Atual</h3>
           <p className="text-5xl font-bold">{balance} <span className="text-2xl">moedas</span></p>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Filtrar por Data</h3>
+          <div className="flex flex-wrap gap-4 items-end">
+            <div className="flex-1 min-w-[200px]">
+              <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">
+                Data Inicial
+              </label>
+              <input
+                type="date"
+                id="startDate"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div className="flex-1 min-w-[200px]">
+              <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-2">
+                Data Final
+              </label>
+              <input
+                type="date"
+                id="endDate"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleFilter}
+                disabled={!startDate || !endDate}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
+              >
+                Filtrar
+              </button>
+              {isFiltering && (
+                <button
+                  onClick={handleClearFilter}
+                  className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium"
+                >
+                  Limpar
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="bg-white rounded-xl shadow-md overflow-hidden">

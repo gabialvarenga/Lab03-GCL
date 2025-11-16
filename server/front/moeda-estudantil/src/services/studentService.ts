@@ -16,8 +16,20 @@ export const studentService = {
     await api.delete(`/students/${id}`);
   },
 
-  getTransactions: async (id: number): Promise<Transaction[]> => {
-    const response = await api.get<Transaction[]>(`/students/${id}/transactions`);
+  getTransactions: async (id: number, startDate?: string, endDate?: string): Promise<Transaction[]> => {
+    let url = `/students/${id}/transactions`;
+    const params = new URLSearchParams();
+    
+    if (startDate && endDate) {
+      params.append('startDate', startDate);
+      params.append('endDate', endDate);
+    }
+    
+    if (params.toString()) {
+      url += `?${params.toString()}`;
+    }
+    
+    const response = await api.get<Transaction[]>(url);
     return response.data;
   },
 
