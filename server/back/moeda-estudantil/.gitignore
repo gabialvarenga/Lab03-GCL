@@ -31,3 +31,15 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Environment Variables ###
+.env
+.env.local
+.env.production
+
+### Email Configuration (Security) ###
+application-production.properties
+application-local.properties
+
+### Uploads ###
+uploads/
