@@ -28,7 +28,10 @@ const isTokenExpiringSoon = (token: string): boolean => {
 const refreshToken = async (): Promise<string | null> => {
   try {
     const currentToken = localStorage.getItem('token');
-    if (!currentToken) return null;
+    if (!currentToken) {
+      console.log('Nenhum token para renovar');
+      return null;
+    }
 
     const response = await axios.post(
       `${API_BASE_URL}/auth/refresh`,
@@ -46,6 +49,11 @@ const refreshToken = async (): Promise<string | null> => {
     return newToken;
   } catch (error) {
     console.error('Erro ao renovar token:', error);
+    // Limpa o token inválido
+    localStorage.removeItem('token');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userEmail');
     return null;
   }
 };
@@ -53,6 +61,17 @@ const refreshToken = async (): Promise<string | null> => {
 // Add token to requests if available
 api.interceptors.request.use(
   async (config) => {
+    // Não adiciona token para endpoints públicos (login e refresh)
+    const isAuthEndpoint = config.url?.includes('/auth/login') || 
+                          config.url?.includes('/auth/refresh') ||
+                          config.url?.includes('/students') && config.method === 'post' ||
+                          config.url?.includes('/companies') && config.method === 'post' ||
+                          config.url?.includes('/institutions');
+    
+    if (isAuthEndpoint) {
+      return config;
+    }
+
     const token = localStorage.getItem('token');
     if (token) {
       // Verifica se o token está próximo de expirar
