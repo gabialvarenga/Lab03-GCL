@@ -61,14 +61,18 @@ const refreshToken = async (): Promise<string | null> => {
 // Add token to requests if available
 api.interceptors.request.use(
   async (config) => {
-    // Não adiciona token para endpoints públicos (login e refresh)
+    // Não adiciona token para endpoints públicos (login, refresh e cadastro)
     const isAuthEndpoint = config.url?.includes('/auth/login') || 
-                          config.url?.includes('/auth/refresh') ||
-                          config.url?.includes('/students') && config.method === 'post' ||
-                          config.url?.includes('/companies') && config.method === 'post' ||
-                          config.url?.includes('/institutions');
+                          config.url?.includes('/auth/refresh');
     
-    if (isAuthEndpoint) {
+    // Permitir cadastro de novos alunos e empresas sem token
+    const isPublicRegistration = (config.url === '/students' || config.url === '/companies') && 
+                                 config.method === 'post';
+    
+    // Permitir consulta de instituições sem token
+    const isInstitutionQuery = config.url?.includes('/institutions');
+    
+    if (isAuthEndpoint || isPublicRegistration || isInstitutionQuery) {
       return config;
     }
 

@@ -149,39 +149,36 @@ const StudentStatement: React.FC = () => {
           ) : (
             <div className="divide-y divide-gray-200">
               {transactions.map((transaction) => {
-                // Determina se é recebimento ou gasto para o aluno
-                const isIncoming = transaction.type === 'RECEIVED' || transaction.receiverId === userId;
-                const isOutgoing = transaction.type === 'SENT' || transaction.type === 'REDEEMED';
+                // Para o aluno: se ele é o receiver = recebeu (+), se é sender = gastou (-)
+                const isIncoming = transaction.receiverId === userId;
+                const isRedeemed = transaction.type === 'REDEEMED';
                 
                 return (
                   <div key={transaction.id} className="p-6 hover:bg-gray-50 transition-colors">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
+                        <div className="flex items-center gap-3 mb-2">
                           <span className="text-2xl">
-                            {transaction.type === 'RECEIVED' && '💰'}
-                            {transaction.type === 'REDEEMED' && '🎁'}
-                            {transaction.type === 'SENT' && '�'}
+                            {isIncoming && '💰'}
+                            {isRedeemed && '🎁'}
                           </span>
-                          <span className="font-semibold text-gray-900">
-                            {transaction.type === 'RECEIVED' && 'Moedas Recebidas'}
-                            {transaction.type === 'REDEEMED' && 'Resgate de Vantagem'}
-                            {transaction.type === 'SENT' && 'Transferência Enviada'}
-                          </span>
+                          <div>
+                            <h3 className="font-semibold text-gray-900 text-lg">
+                              {isIncoming && 'Transferência Recebida'}
+                              {isRedeemed && 'Resgate de Vantagem'}
+                            </h3>
+                            {isIncoming && transaction.senderName && (
+                              <p className="text-sm text-gray-600">
+                                De: <span className="font-medium text-gray-900">{transaction.senderName}</span>
+                              </p>
+                            )}
+                          </div>
                         </div>
-                        <p className="text-gray-600 mb-1">{transaction.reason}</p>
-                        {transaction.senderName && isIncoming && (
-                          <p className="text-sm text-gray-500">
-                            👨‍🏫 Enviado por: <span className="font-medium">{transaction.senderName}</span>
-                          </p>
-                        )}
-                        {transaction.receiverName && isOutgoing && (
-                          <p className="text-sm text-gray-500">Para: {transaction.receiverName}</p>
-                        )}
-                        <p className="text-sm text-gray-500 mt-1">{formatDate(transaction.date)}</p>
+                        <p className="text-gray-600 mb-2 ml-11">{transaction.reason}</p>
+                        <p className="text-sm text-gray-500 ml-11">{formatDate(transaction.date)}</p>
                       </div>
-                      <div className={`text-2xl font-bold ml-4 ${isOutgoing ? 'text-green-600' : 'text-red-600'}`}>
-                        {isOutgoing ? '+' : '-'}
+                      <div className={`text-2xl font-bold ml-4 ${isIncoming ? 'text-green-600' : 'text-red-600'}`}>
+                        {isIncoming ? '+' : '-'}
                         {transaction.amount}
                       </div>
                     </div>
