@@ -34,7 +34,9 @@ public class CouponService {
 
         // Validações
         if (student.getCoinBalance() < advantage.getCostInCoins()) {
-            throw new IllegalArgumentException("Saldo insuficiente");
+            throw new IllegalArgumentException("Saldo insuficiente. Você possui " + 
+                student.getCoinBalance() + " moedas, mas esta vantagem custa " + 
+                advantage.getCostInCoins() + " moedas.");
         }
 
         // Verifica se há cupons disponíveis
@@ -42,18 +44,18 @@ public class CouponService {
             throw new IllegalArgumentException("Não há mais cupons disponíveis para esta vantagem");
         }
 
-        // Decrementa a quantidade disponível
+        // Decrementa a quantidade disponível da vantagem
         advantage.decrementQuantity();
         advantageRepository.save(advantage);
 
-        // Usar o método da entidade Student para resgatar vantagem
+        // Usar o método da entidade Student para resgatar vantagem (desconta saldo)
         Coupon coupon = student.redeemAdvantage(advantage);
         
         // Garantir que as relações do coupon estejam definidas antes de salvar
         coupon.setStudent(student);
         coupon.setAdvantage(advantage);
         
-        // Persistir as alterações
+        // Persistir as alterações (student tem saldo atualizado)
         studentRepository.save(student);
         Coupon savedCoupon = couponRepository.save(coupon);
         
@@ -61,11 +63,13 @@ public class CouponService {
         savedCoupon.setStudent(student);
         savedCoupon.setAdvantage(advantage);
 
-        // Criar transação de resgate
+        // Criar transação de resgate para histórico
         transactionService.createRedemptionTransaction(student, advantage.getCostInCoins(), advantage.getName());
 
-        // Enviar emails
+        // Enviar email com cupom para o aluno
         emailService.sendCouponToStudent(student, savedCoupon);
+        
+        // Enviar email de notificação para a empresa parceira
         Company company = advantage.getCompany();
         if (company != null) {
             emailService.notifyCompanyRedemption(company, savedCoupon);

@@ -56,6 +56,7 @@ public class SecurityConfig {
                         ).permitAll()
                         
                         // Alunos - STUDENT tem acesso completo aos endpoints de aluno
+                        .requestMatchers(HttpMethod.POST, "/api/students/purchase").hasAnyRole("STUDENT", "ADMIN") // Aluno pode resgatar vantagens
                         .requestMatchers(HttpMethod.GET, "/api/students/**").hasAnyRole("STUDENT", "TEACHER", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/students/**").hasAnyRole("STUDENT", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/students/**").hasAnyRole("STUDENT", "ADMIN")
@@ -80,6 +81,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/advantages/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/advantages/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/advantages/**").hasAnyRole("COMPANY", "ADMIN")
+                        
+                        // Cupons - STUDENT pode ver seus cupons, COMPANY pode validar e marcar como usado
+                        .requestMatchers(HttpMethod.GET, "/api/coupons/validate/**").hasAnyRole("COMPANY", "ADMIN") // Empresa valida cupom
+                        .requestMatchers(HttpMethod.PATCH, "/api/coupons/use/**").hasAnyRole("COMPANY", "ADMIN") // Empresa marca como usado
+                        .requestMatchers(HttpMethod.GET, "/api/coupons/student/**").hasAnyRole("STUDENT", "ADMIN") // Aluno vê seus cupons
+                        .requestMatchers(HttpMethod.GET, "/api/coupons/company/**").hasAnyRole("COMPANY", "ADMIN") // Empresa vê cupons dela
                         
                         // Transações - Professores enviam, alunos resgatam
                         .requestMatchers(HttpMethod.POST, "/api/transactions/send").hasRole("TEACHER")

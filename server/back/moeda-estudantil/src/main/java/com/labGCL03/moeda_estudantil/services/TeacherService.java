@@ -99,7 +99,6 @@ public class TeacherService {
     public Teacher update(Long id, TeacherUpdateDTO dto) {
         Teacher teacher = findById(id);
         
-        // Verifica se o email já está em uso por outro professor
         if (!teacher.getEmail().equals(dto.getEmail())) {
             teacherRepository.findByEmail(dto.getEmail()).ifPresent(t -> {
                 if (!t.getId().equals(id)) {

@@ -47,14 +47,23 @@ public class Coupon {
         if (code == null) {
             code = generateCode();
         }
+        if (used == null) {
+            used = false;
+        }
     }
 
     public void markAsUsed() {
         this.used = true;
     }
 
+    /**
+     * Gera um código único para o cupom no formato: XXXX-XXXX
+     * Baseado em UUID para garantir unicidade
+     */
     public String generateCode() {
-        return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        String uuid = UUID.randomUUID().toString().replace("-", "").toUpperCase();
+        // Pega os primeiros 8 caracteres e formata como XXXX-XXXX
+        return uuid.substring(0, 4) + "-" + uuid.substring(4, 8);
     }
 
     public boolean isUsed() {
